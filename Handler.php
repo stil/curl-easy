@@ -8,6 +8,9 @@ class Handler
 	 */
 	protected $ch;
 	
+	/**
+	 * @static array cURL constants table for intelligent lookup
+	 */
 	static protected $curlConstantsTable = array();
 	
 	/**
