@@ -4,6 +4,14 @@ namespace cURL;
 class EventManager {
 	protected $listeners=array();
 	
+	/**
+	 * Summary
+	 * 
+	 * @param unknown $id       Description
+	 * @param unknown $callback Description
+	 * 
+	 * @return Type    Description
+	 */
 	public function attach($id,$callback) {
 		$this->listeners[$id][]=$callback;
 	}
