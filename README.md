@@ -31,10 +31,10 @@ echo $feed['entry']['title']['$t'];
 and to plain old procedural cURL:
 ```php
 <?php
-$ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
-$ch->set(CURLOPT_TIMEOUT,5);
-$ch->set(CURLOPT_RETURNTRANSFER,true);
-$json = $ch->execute();
+$ch = curl_init('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
+curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$json = curl_exec($ch);
 $feed = json_decode($json, true);
 echo $feed['entry']['title']['$t'];
 ```
@@ -71,25 +71,25 @@ $ch->set($options);
 ##Parallel connections
 ```php
 <?php
-$defaultOptions=array(
-	CURLOPT_TIMEOUT=>5,
-	CURLOPT_RETURNTRANSFER=>true
+$defaultOptions = array( #Prepare default options
+	CURLOPT_TIMEOUT => 5,
+	CURLOPT_RETURNTRANSFER => true
 );
 
-$mh = new \cURL\MultiHandler;
+$mh = new \cURL\MultiHandler; # Initialize cURL-multi
 
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
 $ch->set($defaultOptions);
-$mh->attach($ch);
+$mh->attach($ch); # Attach first handler to queue
 
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/IofN_sunFvo?v=2&alt=json');
 $ch->set($defaultOptions);
-$mh->attach($ch);
+$mh->attach($ch); # Attach second handler to queue
 
-$mh->onComplete(function($mh,$ch) {
-	$json = $ch->getContent();
+$mh->onComplete(function(\cURL\MultiHandler $mh, \cURL\Handler $ch) { # Callback on complete request
+	$json = $ch->getContent(); # Returns content of response
 	$feed = json_decode($json, true);
-	echo $feed['entry']['title']['$t']."\n";
+	echo $feed['entry']['title']['$t'] . "\n";
 });
 
 $mh->execute();
