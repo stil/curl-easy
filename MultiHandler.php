@@ -136,6 +136,7 @@ class MultiHandler
 			$ch = $info['handle'];
 			$handle = $this->handles[(int)$ch];
 			$this->eventManager->notify('complete', array($this, $handle));
+			$this->detach($handle);
 		}
 	}
 	
@@ -147,10 +148,20 @@ class MultiHandler
 	protected function clearTimeoutHandles()
 	{
 		foreach ($this->handles as $handle) {
-			if ($handle->timeout > 0 && (microtime(true) - $ch->timeStart) >= $handle->timeout) {
+			if ($handle->timeout > 0 && (microtime(true) - $handle->timeStart) >= $handle->timeout) {
 				$this->eventManager->notify('complete', array($this, $handle));
+				$this->detach($handle);
 			}
 		}
+	}
+	
+	/**
+	 * Returns count of handles in queue.
+	 * 
+	 * @return int
+	 */
+	public function activeHandlesCount() {
+		return count($this->handles);
 	}
 	
 	/**

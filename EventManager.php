@@ -17,7 +17,7 @@ class EventManager {
 	}
 	
 	public function notify($id,$parameters) {
-		if(!isset($this->listeners) or empty($this->listeners)) return;
+		if(!isset($this->listeners[$id]) or empty($this->listeners[$id])) return;
 		
 		foreach($this->listeners[$id] as $callback) {
 			call_user_func_array($callback,$parameters);
