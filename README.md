@@ -10,6 +10,7 @@ This is small but powerful and robust library which speeds the things up.
 
 ##Single request example
 ```php
+<?php
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
 $ch->setTimeout(5);
 $ch->setReturnTransfer(true);
@@ -19,6 +20,7 @@ echo $feed['entry']['title']['$t'];
 ```
 its equivalent to:
 ```php
+<?php
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
 $ch->set(CURLOPT_TIMEOUT,5);
 $ch->set(CURLOPT_RETURNTRANSFER,true);
@@ -28,6 +30,7 @@ echo $feed['entry']['title']['$t'];
 ```
 and to plain old procedural cURL:
 ```php
+<?php
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
 $ch->set(CURLOPT_TIMEOUT,5);
 $ch->set(CURLOPT_RETURNTRANSFER,true);
