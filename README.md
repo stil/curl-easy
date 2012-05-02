@@ -12,8 +12,8 @@ This is small but powerful and robust library which speeds the things up.
 ```php
 <?php
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
-$ch->setTimeout(5);
-$ch->setReturnTransfer(true);
+$ch->set(CURLOPT_TIMEOUT,5);
+$ch->set(CURLOPT_RETURNTRANSFER,true);
 $json = $ch->execute();
 $feed = json_decode($json, true);
 echo $feed['entry']['title']['$t'];
@@ -22,8 +22,8 @@ its equivalent to:
 ```php
 <?php
 $ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
-$ch->set(CURLOPT_TIMEOUT,5);
-$ch->set(CURLOPT_RETURNTRANSFER,true);
+$ch->setTimeout(5);
+$ch->setReturnTransfer(true);
 $json = $ch->execute();
 $feed = json_decode($json, true);
 echo $feed['entry']['title']['$t'];
@@ -37,4 +37,60 @@ $ch->set(CURLOPT_RETURNTRANSFER,true);
 $json = $ch->execute();
 $feed = json_decode($json, true);
 echo $feed['entry']['title']['$t'];
+```
+
+##3 ways to set handler parameters
+###Plain old cURL constants CURLOPT_*
+Same as original cURL extension.
+```php
+<?php
+$ch->set(CURLOPT_TIMEOUT,5);
+$ch->set(CURLOPT_RETURNTRANSFER,true);
+$ch->set(CURLOPT_USERAGENT,'Opera/9.80 (Windows NT 6.1; WOW64; U; IBM EVV/3.0/EAK01AG9/LE; pl) Presto/2.10.229 Version/11.62');
+```
+###Intelligent setters based on constants
+Just cut the *CURLOPT_* from constant name and prepend it with "set" to get name of method.
+```php
+<?php
+$ch->setTimeout(5);
+$ch->setReturnTransfer(true);
+$ch->setUserAgent('Opera/9.80 (Windows NT 6.1; WOW64; U; IBM EVV/3.0/EAK01AG9/LE; pl) Presto/2.10.229 Version/11.62');
+```
+It is case insensitive. You can either do $ch->setUsErAgEnT() and $ch->setUSERAGENT() - it doesn't matter.
+
+###And last method allows you set many parameters at once.
+```php
+<?php
+$options=array(
+	CURLOPT_TIMEOUT=>5,
+	CURLOPT_RETURNTRANSFER=>true,
+	CURLOPT_USERAGENT=>'Opera/9.80 (Windows NT 6.1; WOW64; U; IBM EVV/3.0/EAK01AG9/LE; pl) Presto/2.10.229 Version/11.62'
+);
+$ch->set($options);
+```
+##Parallel connections
+```php
+<?php
+$defaultOptions=array(
+	CURLOPT_TIMEOUT=>5,
+	CURLOPT_RETURNTRANSFER=>true
+);
+
+$mh = new \cURL\MultiHandler;
+
+$ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/uCg2BoKiuOM?v=2&alt=json');
+$ch->set($defaultOptions);
+$mh->attach($ch);
+
+$ch = new \cURL\Handler('http://gdata.youtube.com/feeds/api/videos/IofN_sunFvo?v=2&alt=json');
+$ch->set($defaultOptions);
+$mh->attach($ch);
+
+$mh->onComplete(function($mh,$ch) {
+	$json = $ch->getContent();
+	$feed = json_decode($json, true);
+	echo $feed['entry']['title']['$t']."\n";
+});
+
+$mh->execute();
 ```
