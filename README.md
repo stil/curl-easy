@@ -96,6 +96,8 @@ $mh->execute();
 ```
 
 #Options CURLOPT_* mapping
+CURLOPT_*  | Intelligent setter
+------------- | -------------
 `$ch->set(CURLOPT_IPRESOLVE, $value)` | `$ch->setIpResolve($value)`
 `$ch->set(CURLOPT_DNS_USE_GLOBAL_CACHE, $value)` | `$ch->setDnsUseGlobalCache($value)`
 `$ch->set(CURLOPT_DNS_CACHE_TIMEOUT, $value)` | `$ch->setDnsCacheTimeout($value)`
