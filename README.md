@@ -1,7 +1,9 @@
 #cURL wrapper for PHP
+##Description
 This is small but powerful and robust library which speeds the things up.
-##Main features:
-* lightweight library with low-level interface. It's not all-in-one library.
+If you are tired of using PHP cURL extension with its procedural interface, but you want also keep control about script execution - it's great choice for you!
+##Main features
+* lightweight library with moderate level interface. It's not all-in-one library.
 * parallel/asynchronous connections with very simple interface.
 * attaching/detaching requests in parallel on run time!
 * support for callbacks, so you can control execution process.
