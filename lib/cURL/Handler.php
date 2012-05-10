@@ -65,6 +65,8 @@ class Handler
 		$table=array();
 		foreach($constants['curl'] as $key=>$value) {
 			if(strpos($key,'CURLOPT_')===0) {
+				//echo '`$ch->set('.$key.', $value)` | `$ch->set';
+				//echo str_replace(' ','',ucwords(strtolower(str_ireplace(array('CURLOPT','_'),' ',$key)))).'($value)`'.PHP_EOL;
 				$key=str_ireplace(array('CURLOPT','_'),'',$key);
 				$table[$key]=$value;
 			}
