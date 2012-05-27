@@ -180,7 +180,6 @@ class RequestsQueue implements RequestsQueueInterface {
             $this->readAll();
             /* Remove timeout requests */
             $this->cleanupTimeoutedRequests();
-            var_dump(memory_get_usage() / 1024);
             return $running > 0;
         }
         return false;

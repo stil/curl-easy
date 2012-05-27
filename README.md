@@ -50,16 +50,46 @@ spl_autoload_register(function ($class) {
 ```php
 <?php
 // We will download info about YouTube video: http://youtu.be/_PsdGQ96ah4
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/PsdGQ96ah4?v=2&alt=json');
+$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/_PsdGQ96ah4?v=2&alt=json');
 $request->getOptions()
 	->set(CURLOPT_TIMEOUT, 5)
 	->set(CURLOPT_RETURNTRANSFER, true);
 $json = $request->send();
 $feed = json_decode($json, true);
 echo $feed['entry']['title']['$t'];
-// The title is: "Karmah - Just be good to me"
 ```
+The above example will output:
+`Karmah - Just be good to me`
 ###Requests in parallel
+```php
+<?php
+// We will download info about 2 YouTube videos:
+// http://youtu.be/XmSdTa9kaiQ and
+// http://youtu.be/6dC-sm5SWiU
+
+$queue = new \cURL\RequestsQueue;
+$queue->getDefaultOptions()
+	->set(CURLOPT_TIMEOUT, 5)
+	->set(CURLOPT_RETURNTRANSFER, true);
+$queue->onRequestComplete(function($queue, $request){
+	$json = $request->getContent(); // Returns content of response
+    $feed = json_decode($json, true);
+    echo $feed['entry']['title']['$t'] . '<br />';
+});
+
+$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/XmSdTa9kaiQ?v=2&alt=json');
+$queue->attach($request);
+
+$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/6dC-sm5SWiU?v=2&alt=json');
+$queue->attach($request);
+
+$queue->send();
+```
+The above example will output:
+```
+Kool & The Gang - Fresh - 2004
+U2 - With Or Without You
+```
 ##cURL\Request
 ###Request::__construct
 ###Request::getOptions
