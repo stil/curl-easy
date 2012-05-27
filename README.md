@@ -33,7 +33,8 @@ This is small but powerful and robust library which speeds the things up. If you
 * attaching/detaching requests in parallel on run time!
 * support for callbacks, so you can control execution process.
 * intelligent setters as alternative to CURLOPT_* constants.
-* if you know the cURL php extension, you don't have to learn things from beginning.
+* if you know the cURL php extension, you don't have to learn things from beginning
+
 ##Installation
 In order to use cURL-PHP library you need to install the » libcurl package.
 It also requires PHP 5.3 or newer.
@@ -93,6 +94,42 @@ $queue->send();
 The above example will output:
 ```
 Kool & The Gang - Fresh - 2004
+U2 - With Or Without You
+```
+###Non-blocking requests
+```php
+// We will download info about 2 YouTube videos:
+// http://youtu.be/XmSdTa9kaiQ and
+// http://youtu.be/6dC-sm5SWiU
+
+// Init queue of requests
+$queue = new \cURL\RequestsQueue;
+// Set default options for all requests in queue
+$queue->getDefaultOptions()
+	->set(CURLOPT_TIMEOUT, 5)
+	->set(CURLOPT_RETURNTRANSFER, true);
+// Set function to be executed when request will be completed
+$queue->onRequestComplete(function($queue, $request){
+	$json = $request->getContent(); // Returns content of response
+    $feed = json_decode($json, true);
+    echo '<br />' . $feed['entry']['title']['$t'] . '<br />';
+});
+
+$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/XmSdTa9kaiQ?v=2&alt=json');
+$queue->attach($request);
+$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/6dC-sm5SWiU?v=2&alt=json');
+$queue->attach($request);
+
+while ($queue->socketPerform()) {
+	echo '*'; // Do something other when requests are downloaded
+    $queue->socketSelect(); // Wait for activity on socket	
+}
+```
+The above example will output something like that:
+```
+*********
+Kool & The Gang - Fresh - 2004
+***
 U2 - With Or Without You
 ```
 ##cURL\Request
