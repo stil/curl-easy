@@ -39,13 +39,16 @@ In order to use cURL-PHP library you need to install the » libcurl package.
 It also requires PHP 5.3 or newer.
 
 You can provide autoloading to your classes if you don't want to include them manually.
-```<?php
+```php
+<?php
 spl_autoload_register(function ($class) {
     require 'D:/lib/'.strtr($class, '\\', '/') . '.php';
-});```
+});
+```
 ##Examples
 ###Single request
-```<?php
+```php
+<?php
 // We will download info about YouTube video: http://youtu.be/_PsdGQ96ah4
 $request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/PsdGQ96ah4?v=2&alt=json');
 $request->getOptions()
@@ -54,7 +57,8 @@ $request->getOptions()
 $json = $request->send();
 $feed = json_decode($json, true);
 echo $feed['entry']['title']['$t'];
-// The title is: "Karmah - Just be good to me"```
+// The title is: "Karmah - Just be good to me"
+```
 ###Requests in parallel
 ##cURL\Request
 ###Request::__construct
