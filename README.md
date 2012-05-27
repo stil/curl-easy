@@ -98,6 +98,7 @@ U2 - With Or Without You
 ```
 ###Non-blocking requests
 ```php
+<?php
 // We will download info about 2 YouTube videos:
 // http://youtu.be/XmSdTa9kaiQ and
 // http://youtu.be/6dC-sm5SWiU
