@@ -9,6 +9,8 @@ interface RequestInterface {
     public function getUID();
     
     public function getInfo($opt);
+    public function getErrorMessage();
+    public function getErrorCode();
     public function getContent();
     
     public function send();

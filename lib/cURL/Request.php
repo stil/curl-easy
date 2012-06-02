@@ -104,6 +104,26 @@ class Request implements RequestInterface {
     }
     
     /**
+     * Returns a clear text error message for the last cURL operation.
+     * 
+     * @return string    Returns the error message or '' (the empty string)
+     * if no error occurred.
+     */
+    public function getErrorMessage() {
+        return curl_error($this->ch);
+    }
+    
+    
+    /**
+     * Returns the error number for the last cURL operation.    
+     * 
+     * @return int  Returns the error number or 0 (zero) if no error occurred. 
+     */
+    public function getErrorCode() {
+        return curl_errno($this->ch);
+    }
+    
+    /**
      * Perform a cURL session.
      * Equivalent to curl_exec().
      * This function should be called after initializing a cURL

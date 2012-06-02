@@ -80,7 +80,10 @@ class RequestsQueue implements RequestsQueueInterface {
      * @return int Returns 0 on success, or one of the CURLM_XXX errors code.
      */
     public function attach(Request $request) {
-        $this->requests[$request->getUID() ] = $request;
+        /* If timeStart exists it means request is added on runtime */
+        if (isset($request->timeStart)) $request->timeStart=microtime(true);
+        
+        $this->requests[$request->getUID()] = $request;
         return curl_multi_add_handle($this->mh, $request->getHandle());
     }
     
@@ -107,8 +110,8 @@ class RequestsQueue implements RequestsQueueInterface {
             $ch = $info['handle'];
             $uid = (int)$ch;
             $request = $this->requests[$uid];
-            $this->eventManager->notify('complete', array($this, $request));
             $this->detach($request);
+            $this->eventManager->notify('complete', array($this, $request));
         }
     }
     
@@ -142,9 +145,10 @@ class RequestsQueue implements RequestsQueueInterface {
      */
     protected function initProcessing() {
         foreach ($this->requests as $k => $request) {
+            if (isset($request->timeStart)) continue;
             $this->getDefaultOptions()->applyTo($request);
             $request->getOptions()->applyTo($request);
-            if (!isset($request->timeStart)) $request->timeStart = microtime(true);
+            $request->timeStart = microtime(true);
         }
         $this->active = true;
     }
@@ -158,7 +162,7 @@ class RequestsQueue implements RequestsQueueInterface {
      */
     public function send() {
         while ($this->socketPerform()) {
-            if (!$this->socketSelect()) {
+            if ($this->socketSelect() === -1) {
                 return false;
             }
         }
@@ -171,28 +175,35 @@ class RequestsQueue implements RequestsQueueInterface {
      * @return bool    TRUE when there are any requests on queue, FALSE when finished
      */
     public function socketPerform() {
-        if (!$this->active) {
+        
+        //if (!$this->active) { requests added on runtime
             $this->initProcessing();
-        }
+        //}
         $remaining = count($this->requests);
         if ($remaining > 0) {
             curl_multi_exec($this->mh, $running);
+            
             $this->readAll();
             /* Remove timeout requests */
             $this->cleanupTimeoutedRequests();
-            return $running > 0;
+            
+            return $running > 0 or count($this->requests)>0;
         }
         return false;
     }
     
     /**
      * Waits until activity on socket
+     * On success, returns the number of descriptors contained in
+     * the descriptor sets. On failure, this function will
+     * return -1 on a select failure or timeout (from the underlying
+     * select system call)
      * 
      * @param float $timeout Maximum time to wait
      * 
-     * @return bool    TRUE on success, FALSE on timeout
+     * @return int
      */
     public function socketSelect($timeout = 0.03) {
-        return curl_multi_select($this->mh, $timeout) !== - 1;
+        return curl_multi_select($this->mh, $timeout);
     }
 }
