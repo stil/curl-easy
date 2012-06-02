@@ -1,15 +1,13 @@
 <?php
 require __DIR__ . '/autoload.php';
 /**
- * We will download info about 10 YouTube videos:
- * http://youtu.be/XmSdTa9kaiQ and
- * http://youtu.be/6dC-sm5SWiU
+ * We will download info about 10 YouTube videos
  * I set the limit to 3 requests in parallel at once
  */
 
 define('CONNECTIONS_LIMIT',3);
 
-// Videos to download
+// IDs of videos to download
 $videos=array(
     '6JnGBs88sL0',
     'XmSdTa9kaiQ',
