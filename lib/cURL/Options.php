@@ -33,7 +33,7 @@ class Options {
             $request->timeout = $this->options[CURLOPT_TIMEOUT];
         }
         if (isset($this->options[CURLOPT_TIMEOUT_MS])) {
-            $request->timeout = $this->options[CURLOPT_TIMEOUT]/1000;
+            $request->timeout = $this->options[CURLOPT_TIMEOUT_MS]/1000;
         }
         if(!empty($this->options))
             return curl_setopt_array($request->getHandle(),$this->options);
