@@ -29,14 +29,18 @@ class Options {
      * @return bool    TRUE on success, FALSE on error
      */
     public function applyTo(Request $request) {
-        if (isset($this->options[CURLOPT_TIMEOUT])) {
-            $request->timeout = $this->options[CURLOPT_TIMEOUT];
+        if(!empty($this->options)) {
+            //if(isset($this->options[CURLOPT_TIMEOUT])) {
+            //    $this->options[CURLOPT_TIMEOUT_MS] = $this->options[CURLOPT_TIMEOUT];
+            //    unset($this->options[CURLOPT_TIMEOUT]);
+            //}
+            //
+            //if(isset($this->options[CURLOPT_TIMEOUT_MS])) {
+            //    $request->timeout = $this->options[CURLOPT_TIMEOUT_MS];
+            //}
+            
+            return curl_setopt_array($request->getHandle(), $this->options);
         }
-        if (isset($this->options[CURLOPT_TIMEOUT_MS])) {
-            $request->timeout = $this->options[CURLOPT_TIMEOUT_MS]/1000;
-        }
-        if(!empty($this->options))
-            return curl_setopt_array($request->getHandle(),$this->options);
         else return true;
     }
     
@@ -75,6 +79,11 @@ class Options {
         } else {
             $this->options[$opt]=$value;
         }
+        return $this;
+    }
+    
+    public function remove($opt) {
+        unset($this->options[$opt]);
         return $this;
     }
     

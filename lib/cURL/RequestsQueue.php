@@ -1,6 +1,6 @@
 <?php
 namespace cURL;
-class RequestsQueue implements RequestsQueueInterface {
+class RequestsQueue implements RequestsQueueInterface, \Countable {
     protected $defaultOptions = null;
     protected $eventManager;
     protected $mh;
@@ -96,7 +96,7 @@ class RequestsQueue implements RequestsQueueInterface {
      * @return int Returns 0 on success, or one of the CURLM_XXX errors code.
      */
     public function detach(Request $request) {
-        unset($this->requests[$request->getUID() ]);
+        unset($this->requests[$request->getUID()]);
         return curl_multi_remove_handle($this->mh, $request->getHandle());
     }
     
@@ -110,6 +110,7 @@ class RequestsQueue implements RequestsQueueInterface {
             $ch = $info['handle'];
             $uid = (int)$ch;
             $request = $this->requests[$uid];
+            $request->setErrorCode($info['result']);
             $this->detach($request);
             $this->eventManager->notify('complete', array($this, $request));
         }
@@ -135,7 +136,11 @@ class RequestsQueue implements RequestsQueueInterface {
      * @return int
      */
     public function activeHandlesCount() {
-        return count($this->handles);
+        return count($this->requests);
+    }
+    
+    public function count() {
+        return count($this->requests);
     }
     
     /**
@@ -185,7 +190,7 @@ class RequestsQueue implements RequestsQueueInterface {
             
             $this->readAll();
             /* Remove timeout requests */
-            $this->cleanupTimeoutedRequests();
+            //$this->cleanupTimeoutedRequests();
             
             return $running > 0 or count($this->requests)>0;
         }

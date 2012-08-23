@@ -11,6 +11,8 @@ class Request implements RequestInterface {
      */
     protected $options = null;
     
+    protected $errorCode = null;
+    
     /**
      * Unix timestamp with microseconds, used only for async connections
      * CURLOPT_TIMEOUT does not work properly with the regular multi and multi_socket interfaces.
@@ -20,12 +22,6 @@ class Request implements RequestInterface {
      * @var float
      */
     public $timeStart = null;
-    
-    /**
-     * @var float Timeout in seconds. Zero means no timeout.
-     * FOR INTERNAL USE ONLY
-     */
-    public $timeout = 0;
     
     /**
      * Create new cURL handle
@@ -120,7 +116,15 @@ class Request implements RequestInterface {
      * @return int  Returns the error number or 0 (zero) if no error occurred. 
      */
     public function getErrorCode() {
-        return curl_errno($this->ch);
+        if(isset($this->errorCode)) return $this->errorCode;
+        else return curl_errno($this->ch);
+    }
+    
+    /**
+     * Set error code. DO NOT USE IT, it's internal function. 
+     */
+    public function setErrorCode($code) {
+        $this->errorCode = $code;
     }
     
     /**
@@ -132,7 +136,9 @@ class Request implements RequestInterface {
      * @return mixed    TRUE on success or FALSE on failure. However, if the CURLOPT_RETURNTRANSFER option is set, it will return the result on success, FALSE on failure.
      */
     public function send() {
-        $this->options->applyTo($this);
+        if($this->options instanceof Options) {
+            $this->options->applyTo($this);
+        }
         return curl_exec($this->ch);
     }
     
