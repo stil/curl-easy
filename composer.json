@@ -1,3 +1,8 @@
 {
-    "name": "stil/curl-easy"
+    "name": "stil/curl-easy",
+    "autoload": {
+        "psr-0": {
+            "cURL": "src/"
+        }
+    }
 }
