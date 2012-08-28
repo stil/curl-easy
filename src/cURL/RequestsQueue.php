@@ -1,10 +1,11 @@
 <?php
 namespace cURL;
-class RequestsQueue implements RequestsQueueInterface, \Countable {
+class RequestsQueue implements RequestsQueueInterface, \Countable
+{
     protected $defaultOptions = null;
     protected $eventManager;
     protected $mh;
-    protected $active = false;
+    protected $running = 0;
     protected $requests = array();
     
     /**
@@ -13,7 +14,8 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->eventManager = new EventManager;
         $this->mh = curl_multi_init();
     }
@@ -24,8 +26,11 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      *
      * @return void
      */
-    public function __destruct() {
-        if (isset($this->mh)) curl_multi_close($this->mh);
+    public function __destruct()
+    {
+        if (isset($this->mh)) {
+            curl_multi_close($this->mh);
+        }
     }
     
     /**
@@ -33,7 +38,8 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      *
      * @return Options
      */
-    public function getDefaultOptions() {
+    public function getDefaultOptions()
+    {
         if (!isset($this->defaultOptions)) {
             $this->defaultOptions = new Options;
         }
@@ -47,18 +53,20 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      *
      * @return void
      */
-    public function setDefaultOptions(Options $defaultOptions) {
+    public function setDefaultOptions(Options $defaultOptions)
+    {
         $this->defaultOptions = $defaultOptions;
     }
     
     /**
      * When every request will be complete callback is executed
      *
-     * @param callback $callback
+     * @param callback $callback Callback function to execute
      *
      * @return void
      */
-    public function onRequestComplete($callback) {
+    public function onRequestComplete($callback)
+    {
         $this->eventManager->attach('complete', $callback);
     }
     
@@ -67,7 +75,8 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      *
      * @return resource
      */
-    public function getHandle() {
+    public function getHandle()
+    {
         return $this->mh;
     }
     
@@ -75,13 +84,16 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      * Attach request to queue.
      * Utilise curl_multi_add_handle().
      *
-     * @param Request $request
+     * @param Request $request Request to add
      *
      * @return int Returns 0 on success, or one of the CURLM_XXX errors code.
      */
-    public function attach(Request $request) {
+    public function attach(Request $request)
+    {
         /* If timeStart exists it means request is added on runtime */
-        if (isset($request->timeStart)) $request->timeStart=microtime(true);
+        if (isset($request->timeStart)) {
+            $request->timeStart = microtime(true);
+        }
         
         $this->requests[$request->getUID()] = $request;
         return curl_multi_add_handle($this->mh, $request->getHandle());
@@ -91,11 +103,12 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      * Detach request from pool.
      * Utilise curl_multi_remove_handle().
      *
-     * @param Request $request
+     * @param Request $request Request to remove
      *
      * @return int Returns 0 on success, or one of the CURLM_XXX errors code.
      */
-    public function detach(Request $request) {
+    public function detach(Request $request)
+    {
         unset($this->requests[$request->getUID()]);
         return curl_multi_remove_handle($this->mh, $request->getHandle());
     }
@@ -105,7 +118,8 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      *
      * @return void
      */
-    protected function readAll() {
+    protected function readAll()
+    {
         while ($info = curl_multi_info_read($this->mh)) {
             $ch = $info['handle'];
             $uid = (int)$ch;
@@ -117,29 +131,12 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
     }
     
     /**
-     * Removes timeout handles from queue.
-     *
-     * @return void
+     * Returns count of handles in queue
+     * 
+     * @return int    Handles count
      */
-    protected function cleanupTimeoutedRequests() {
-        foreach ($this->requests as $handle) {
-            if ($handle->timeout > 0 && (microtime(true) - $handle->timeStart) >= $handle->timeout) {
-                $this->eventManager->notify('complete', array($this, $handle));
-                $this->detach($handle);
-            }
-        }
-    }
-    
-    /**
-     * Returns count of handles in queue.
-     *
-     * @return int
-     */
-    public function activeHandlesCount() {
-        return count($this->requests);
-    }
-    
-    public function count() {
+    public function count()
+    {
         return count($this->requests);
     }
     
@@ -148,30 +145,30 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      * 
      * @return void
      */
-    protected function initProcessing() {
+    protected function initProcessing()
+    {
         foreach ($this->requests as $k => $request) {
-            if (isset($request->timeStart)) continue;
+            if (isset($request->timeStart)) {
+                continue;
+            }
             $this->getDefaultOptions()->applyTo($request);
             $request->getOptions()->applyTo($request);
             $request->timeStart = microtime(true);
         }
-        $this->active = true;
     }
     
     /**
-     * Sends requests in parallel with blocking
+     * Sends requests in parallel
      *
-     * @param bool $blocking Block script execution until requests is complete?
-     *
-     * @return bool is execution still running?
+     * @return void
      */
-    public function send() {
+    public function send()
+    {
         while ($this->socketPerform()) {
-            if ($this->socketSelect() === -1) {
-                return false;
+            if (!$this->socketSelect()) {
+                return;
             }
         }
-        return true;
     }
     
     /**
@@ -179,36 +176,35 @@ class RequestsQueue implements RequestsQueueInterface, \Countable {
      * 
      * @return bool    TRUE when there are any requests on queue, FALSE when finished
      */
-    public function socketPerform() {
+    public function socketPerform()
+    {
+        $this->initProcessing();
         
-        //if (!$this->active) { requests added on runtime
-            $this->initProcessing();
-        //}
-        $remaining = count($this->requests);
-        if ($remaining > 0) {
-            curl_multi_exec($this->mh, $running);
-            
-            $this->readAll();
-            /* Remove timeout requests */
-            //$this->cleanupTimeoutedRequests();
-            
-            return $running > 0 or count($this->requests)>0;
-        }
-        return false;
+        do {
+            $mrc = curl_multi_exec($this->mh, $this->running);
+        } while ($mrc === CURLM_CALL_MULTI_PERFORM);
+        
+        $this->readAll();
+        
+        do {
+            $mrc = curl_multi_exec($this->mh, $this->running);
+        } while ($mrc === CURLM_CALL_MULTI_PERFORM);
+        
+        return $this->count() > 0;
     }
     
     /**
      * Waits until activity on socket
-     * On success, returns the number of descriptors contained in
-     * the descriptor sets. On failure, this function will
-     * return -1 on a select failure or timeout (from the underlying
+     * On success, returns TRUE. On failure, this function will
+     * return FALSE on a select failure or timeout (from the underlying
      * select system call)
      * 
      * @param float $timeout Maximum time to wait
      * 
-     * @return int
+     * @return bool
      */
-    public function socketSelect($timeout = 0.03) {
-        return curl_multi_select($this->mh, $timeout);
+    public function socketSelect($timeout = 1)
+    {
+        return curl_multi_select($this->mh, $timeout) !== -1; 
     }
 }
