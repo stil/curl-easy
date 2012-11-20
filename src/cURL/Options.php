@@ -1,7 +1,8 @@
 <?php
 namespace cURL;
 
-class Options {
+class Options
+{
     /**
      * @var array Array of cURL constants required for intelligent setters
      */
@@ -10,14 +11,15 @@ class Options {
     /**
      * @var array Array of cURL options
      */
-    protected $options=array();
+    protected $options = array();
     
     /**
      * Converts current object to array
      * 
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         return $this->options;
     }
     
@@ -28,8 +30,9 @@ class Options {
      * 
      * @return bool    TRUE on success, FALSE on error
      */
-    public function applyTo(Request $request) {
-        if(!empty($this->options)) {
+    public function applyTo(Request $request)
+    {
+        if (!empty($this->options)) {
             //if(isset($this->options[CURLOPT_TIMEOUT])) {
             //    $this->options[CURLOPT_TIMEOUT_MS] = $this->options[CURLOPT_TIMEOUT];
             //    unset($this->options[CURLOPT_TIMEOUT]);
@@ -40,8 +43,9 @@ class Options {
             //}
             
             return curl_setopt_array($request->getHandle(), $this->options);
+        } else {
+            return true;
         }
-        else return true;
     }
     
     /**
@@ -49,17 +53,14 @@ class Options {
      * 
      * @return void
      */
-    public static function loadCurlConstantsTable() {
+    public static function loadCurlConstantsTable()
+    {
         $constants = get_defined_constants(true);
         $table = array();
         foreach ($constants['curl'] as $key => $value) {
-            if (strpos($key, 'CURLOPT_') === 0) {
-                //echo '`$ch->set('.$key.', $value)` | `$ch->set';
-                //echo str_replace(' ','',ucwords(strtolower(str_ireplace(array('CURLOPT','_'),' ',$key)))).'($value)`'.PHP_EOL;
-                
+            if (strpos($key, 'CURLOPT_') === 0) {                
                 $key = str_ireplace(array('CURLOPT', '_'), '', $key);
                 $table[$key] = $value;
-                //var_dump($key,$value);
             }
         }
         self::$curlConstantsTable = $table;
@@ -73,16 +74,20 @@ class Options {
      * 
      * @return $this    Fluent interface
      */
-    public function set($opt, $value = null) {
-        if(is_array($opt)) {
-            foreach($opt as $k=>$v) $this->options[$k]=$v;
+    public function set($opt, $value = null)
+    {
+        if (is_array($opt)) {
+            foreach ($opt as $k => $v) {
+                $this->options[$k] = $v;
+            }
         } else {
-            $this->options[$opt]=$value;
+            $this->options[$opt] = $value;
         }
         return $this;
     }
     
-    public function remove($opt) {
+    public function remove($opt)
+    {
         unset($this->options[$opt]);
         return $this;
     }
@@ -92,16 +97,19 @@ class Options {
      * 
      * @return $this    Fluent interface
      */
-    public function __call($name, $args) {
+    public function __call($name, $args)
+    {
         if (substr($name, 0, 3) == 'set' && isset($args[0])) {
             if (empty(self::$curlConstantsTable)) {
                 self::loadCurlConstantsTable();
             }
             $const = strtoupper(substr($name, 3));
             if (isset(self::$curlConstantsTable[$const])) {
-                $this->options[self::$curlConstantsTable[$const]]=$args[0];
+                $this->options[self::$curlConstantsTable[$const]] = $args[0];
                 return $this;
-            } else return false;
+            } else {
+                return false;
+            }
         }
     }
 }

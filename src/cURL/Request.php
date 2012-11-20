@@ -1,6 +1,8 @@
 <?php
 namespace cURL;
-class Request implements RequestInterface {
+
+class Request implements RequestInterface
+{
     /**
      * @var resource cURL Handler
      */
@@ -30,7 +32,8 @@ class Request implements RequestInterface {
      *
      * @return void
      */
-    public function __construct($url = null) {
+    public function __construct($url = null)
+    {
         $this->ch = curl_init($url);
     }
     
@@ -41,8 +44,11 @@ class Request implements RequestInterface {
      *
      * @return void
      */
-    public function __destruct() {
-        if (isset($this->ch)) curl_close($this->ch);
+    public function __destruct()
+    {
+        if (isset($this->ch)) {
+            curl_close($this->ch);
+        }
     }
     
     /**
@@ -50,7 +56,8 @@ class Request implements RequestInterface {
      *
      * @return Options
      */
-    public function getOptions() {
+    public function getOptions()
+    {
         if (!isset($this->options)) {
             $this->options = new Options;
         }
@@ -62,7 +69,8 @@ class Request implements RequestInterface {
      *
      * @return Options
      */
-    public function setOptions(Options $options) {
+    public function setOptions(Options $options)
+    {
         $this->options = $options;
     }
     
@@ -71,7 +79,8 @@ class Request implements RequestInterface {
      *
      * @return resource
      */
-    public function getHandle() {
+    public function getHandle()
+    {
         return $this->ch;
     }
     
@@ -81,7 +90,8 @@ class Request implements RequestInterface {
      *
      * @return int
      */
-    public function getUID() {
+    public function getUID()
+    {
         return (int)$this->ch;
     }
     
@@ -94,9 +104,13 @@ class Request implements RequestInterface {
      *
      * @return mixed
      */
-    public function getInfo($opt = 0) {
-        if ($opt == 0) return curl_getinfo($this->ch);
-        else return curl_getinfo($this->ch, $opt);
+    public function getInfo($opt = 0)
+    {
+        if ($opt == 0) {
+            return curl_getinfo($this->ch);
+        } else {
+            return curl_getinfo($this->ch, $opt);
+        }
     }
     
     /**
@@ -105,7 +119,8 @@ class Request implements RequestInterface {
      * @return string    Returns the error message or '' (the empty string)
      * if no error occurred.
      */
-    public function getErrorMessage() {
+    public function getErrorMessage()
+    {
         return curl_error($this->ch);
     }
     
@@ -115,15 +130,20 @@ class Request implements RequestInterface {
      * 
      * @return int  Returns the error number or 0 (zero) if no error occurred. 
      */
-    public function getErrorCode() {
-        if(isset($this->errorCode)) return $this->errorCode;
-        else return curl_errno($this->ch);
+    public function getErrorCode()
+    {
+        if (isset($this->errorCode)) {
+            return $this->errorCode;
+        } else {
+            return curl_errno($this->ch);
+        }
     }
     
     /**
      * Set error code. DO NOT USE IT, it's internal function. 
      */
-    public function setErrorCode($code) {
+    public function setErrorCode($code)
+    {
         $this->errorCode = $code;
     }
     
@@ -135,8 +155,9 @@ class Request implements RequestInterface {
      *
      * @return mixed    TRUE on success or FALSE on failure. However, if the CURLOPT_RETURNTRANSFER option is set, it will return the result on success, FALSE on failure.
      */
-    public function send() {
-        if($this->options instanceof Options) {
+    public function send()
+    {
+        if ($this->options instanceof Options) {
             $this->options->applyTo($this);
         }
         return curl_exec($this->ch);
@@ -149,7 +170,8 @@ class Request implements RequestInterface {
      *
      * @return string    Content of a cURL handle if CURLOPT_RETURNTRANSFER is set.
      */
-    public function getContent() {
+    public function getContent()
+    {
         return curl_multi_getcontent($this->ch);
     }
 }

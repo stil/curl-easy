@@ -1,6 +1,8 @@
 <?php
 namespace cURL;
-class RequestsQueue implements RequestsQueueInterface, \Countable
+use Countable;
+
+class RequestsQueue implements RequestsQueueInterface, Countable
 {
     protected $defaultOptions = null;
     protected $eventManager;
