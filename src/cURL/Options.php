@@ -67,7 +67,7 @@ class Options
     }
     
     /**
-     * Set option
+     * Sets option
      * 
      * @param mixed $opt   CURLOPT_* constant or array of CURLOPT_* constans
      * @param mixed $value Value for option
@@ -86,16 +86,48 @@ class Options
         return $this;
     }
     
+    /**
+     * Checks if option exist
+     * 
+     * @param mixed $opt Option
+     * 
+     * @return bool    TRUE if exists, FALSE otherwise
+     */
+    public function has($opt)
+    {
+        return isset($this->options[$opt]);
+    }
+    
+    public function get($opt)
+    {
+        if ($this->has($opt)) {
+            return $this->options[$opt];
+        } else {
+            throw new Exception('Option does not exist.');
+        }
+    }
+    
+    /**
+     * Removes option
+     * 
+     * @param mixed $opt Option to remove
+     * 
+     * @return self
+     */
     public function remove($opt)
     {
         unset($this->options[$opt]);
         return $this;
     }
     
+    
     /**
      * Intelligent setters
      * 
-     * @return $this    Fluent interface
+     * @param string $name Function name
+     * @param array $args Arguments
+     * 
+     * @return self
      */
     public function __call($name, $args)
     {
@@ -108,7 +140,7 @@ class Options
                 $this->options[self::$curlConstantsTable[$const]] = $args[0];
                 return $this;
             } else {
-                return false;
+                throw new Exception('Constant CURLOPT_'.$const.' does not exist.');
             }
         }
     }
