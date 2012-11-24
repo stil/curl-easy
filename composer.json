@@ -1,5 +1,8 @@
 {
     "name": "stil/curl-easy",
+    "require": {
+        "symfony/event-dispatcher": "2.1.*"
+    },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
     },

@@ -1,29 +1,43 @@
 <?php
 namespace cURL;
-use Countable;
+use Symfony\Component\EventDispatcher\EventDispatcher,
+    Countable;
 
-class RequestsQueue implements RequestsQueueInterface, Countable
+class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, Countable
 {
+    /**
+     * @var Options Default options for new Requests attached to RequestsQueue
+     */
     protected $defaultOptions = null;
-    protected $eventManager;
+    
+    /**
+     * @var resource cURL multi handler
+     */
     protected $mh;
+    
+    /**
+     * @var int Amount of requests running
+     */
     protected $running = 0;
+    
+    /**
+     * @var array Array of requests attached
+     */
     protected $requests = array();
     
     /**
-     * Constructor of MultiHandler
+     * Constructor
      * Utilise curl_multi_init()
      *
      * @return void
      */
     public function __construct()
     {
-        $this->eventManager = new EventManager;
         $this->mh = curl_multi_init();
     }
     
     /**
-     * Destructor of MultiHandler
+     * Destructor
      * Utilise curl_multi_close()
      *
      * @return void
@@ -58,18 +72,6 @@ class RequestsQueue implements RequestsQueueInterface, Countable
     public function setDefaultOptions(Options $defaultOptions)
     {
         $this->defaultOptions = $defaultOptions;
-    }
-    
-    /**
-     * When every request will be complete callback is executed
-     *
-     * @param callback $callback Callback function to execute
-     *
-     * @return void
-     */
-    public function onRequestComplete($callback)
-    {
-        $this->eventManager->attach('complete', $callback);
     }
     
     /**
@@ -120,15 +122,21 @@ class RequestsQueue implements RequestsQueueInterface, Countable
      *
      * @return void
      */
-    protected function readAll()
+    protected function read()
     {
         while ($info = curl_multi_info_read($this->mh)) {
             $ch = $info['handle'];
-            $uid = (int)$ch;
-            $request = $this->requests[$uid];
-            $request->setErrorCode($info['result']);
+            $request = $this->requests[(int)$ch];
             $this->detach($request);
-            $this->eventManager->notify('complete', array($this, $request));
+            
+            $event = new Event;
+            $event->request = $request;
+            $event->response = new Response($request, curl_multi_getcontent($request->getHandle()));
+            if ($info['result'] !== CURLE_OK) {
+                $event->response->setError(new Error(curl_error($ch), $info['result']));
+            }
+            $event->queue = $this;
+            $this->dispatch('complete', $event);
         }
     }
     
@@ -140,23 +148,6 @@ class RequestsQueue implements RequestsQueueInterface, Countable
     public function count()
     {
         return count($this->requests);
-    }
-    
-    /**
-     * Setup options before execution
-     * 
-     * @return void
-     */
-    protected function initProcessing()
-    {
-        foreach ($this->requests as $k => $request) {
-            if (isset($request->timeStart)) {
-                continue;
-            }
-            $this->getDefaultOptions()->applyTo($request);
-            $request->getOptions()->applyTo($request);
-            $request->timeStart = microtime(true);
-        }
     }
     
     /**
@@ -180,17 +171,27 @@ class RequestsQueue implements RequestsQueueInterface, Countable
      */
     public function socketPerform()
     {
-        $this->initProcessing();
+        if ($this->count() == 0) {
+            throw new Exception('Cannot perform if there are no requests in queue.');
+        }
         
+        foreach ($this->requests as $k => $request) {
+            if (!$request->_running) {
+                $this->getDefaultOptions()->applyTo($request);
+                $request->getOptions()->applyTo($request);
+                $request->_running = true;
+            }
+        }
+        
+        $before = $this->running;
         do {
             $mrc = curl_multi_exec($this->mh, $this->running);
         } while ($mrc === CURLM_CALL_MULTI_PERFORM);
+        $after = $this->running;
         
-        $this->readAll();
-        
-        do {
-            $mrc = curl_multi_exec($this->mh, $this->running);
-        } while ($mrc === CURLM_CALL_MULTI_PERFORM);
+        if ($after < $before) {
+            $this->read();
+        }
         
         return $this->count() > 0;
     }
@@ -207,6 +208,9 @@ class RequestsQueue implements RequestsQueueInterface, Countable
      */
     public function socketSelect($timeout = 1)
     {
+        if ($this->count() == 0) {
+            throw new Exception('Cannot select if there are no requests in queue.');
+        }
         return curl_multi_select($this->mh, $timeout) !== -1; 
     }
 }

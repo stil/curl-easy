@@ -1,7 +1,7 @@
 <?php
 namespace cURL\Tests;
-use cURL\Options;
-use cURL\Exception;
+use cURL\Options,
+    cURL\Exception;
 
 class OptionsTest extends TestCase
 {

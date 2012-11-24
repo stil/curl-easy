@@ -1,29 +1,28 @@
 <?php
 namespace cURL;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
-class Request implements RequestInterface
+class Request extends EventDispatcher implements RequestInterface
 {
     /**
-     * @var resource cURL Handler
+     * @var bool Determines if Request is running in queue. For internal use.
+     */
+    public $_running;
+    
+    /**
+     * @var resource cURL handler
      */
     protected $ch;
+    
+    /**
+     * @var RequestsQueue Queue instance when requesting async
+     */
+    protected $queue;
     
     /**
      * @var Options Object containing options for current request
      */
     protected $options = null;
-    
-    protected $errorCode = null;
-    
-    /**
-     * Unix timestamp with microseconds, used only for async connections
-     * CURLOPT_TIMEOUT does not work properly with the regular multi and multi_socket interfaces.
-     * The work-around for apps is to simply remove the easy handle once the time is up.
-     * See also: http://curl.haxx.se/bug/view.cgi?id=250145
-     * FOR INTERNAL USE ONLY
-     * @var float
-     */
-    public $timeStart = null;
     
     /**
      * Create new cURL handle
@@ -34,7 +33,10 @@ class Request implements RequestInterface
      */
     public function __construct($url = null)
     {
-        $this->ch = curl_init($url);
+        if ($url !== null) {
+            $this->getOptions()->set(CURLOPT_URL, $url);
+        }
+        $this->ch = curl_init();
     }
     
     /**
@@ -52,7 +54,8 @@ class Request implements RequestInterface
     }
     
     /**
-     * Get the cURL\Options object
+     * Get the cURL\Options instance
+     * Creates empty one if does not exist
      *
      * @return Options
      */
@@ -65,9 +68,11 @@ class Request implements RequestInterface
     }
     
     /**
-     * Set the cURL\Options object
-     *
-     * @return Options
+     * Sets Options
+     * 
+     * @param Options $options Options
+     * 
+     * @return void
      */
     public function setOptions(Options $options)
     {
@@ -75,9 +80,9 @@ class Request implements RequestInterface
     }
     
     /**
-     * Get raw cURL handle
-     *
-     * @return resource
+     * Returns cURL raw resource
+     * 
+     * @return resource    cURL handle
      */
     public function getHandle()
     {
@@ -96,82 +101,51 @@ class Request implements RequestInterface
     }
     
     /**
-     * Get information regarding a current transfer
-     * If opt is given, returns its value as a string
-     * Otherwise, returns an associative array with the following elements (which correspond to opt), or FALSE on failure.
-     *
-     * @param int $opt One of the CURLINFO_* constants
-     *
-     * @return mixed
-     */
-    public function getInfo($opt = 0)
-    {
-        if ($opt == 0) {
-            return curl_getinfo($this->ch);
-        } else {
-            return curl_getinfo($this->ch, $opt);
-        }
-    }
-    
-    /**
-     * Returns a clear text error message for the last cURL operation.
-     * 
-     * @return string    Returns the error message or '' (the empty string)
-     * if no error occurred.
-     */
-    public function getErrorMessage()
-    {
-        return curl_error($this->ch);
-    }
-    
-    
-    /**
-     * Returns the error number for the last cURL operation.    
-     * 
-     * @return int  Returns the error number or 0 (zero) if no error occurred. 
-     */
-    public function getErrorCode()
-    {
-        if (isset($this->errorCode)) {
-            return $this->errorCode;
-        } else {
-            return curl_errno($this->ch);
-        }
-    }
-    
-    /**
-     * Set error code. DO NOT USE IT, it's internal function. 
-     */
-    public function setErrorCode($code)
-    {
-        $this->errorCode = $code;
-    }
-    
-    /**
      * Perform a cURL session.
      * Equivalent to curl_exec().
      * This function should be called after initializing a cURL
      * session and all the options for the session are set.
      *
-     * @return mixed    TRUE on success or FALSE on failure. However, if the CURLOPT_RETURNTRANSFER option is set, it will return the result on success, FALSE on failure.
+     * @return Response
      */
     public function send()
     {
         if ($this->options instanceof Options) {
             $this->options->applyTo($this);
         }
-        return curl_exec($this->ch);
+        $content = curl_exec($this->ch);
+        
+        $response = new Response($this, $content);
+        $errorCode = curl_errno($this->ch);
+        if ($errorCode !== CURLE_OK) {
+            $response->setError(new Error(curl_error($this->ch), $errorCode));
+        }
+        return $response;
     }
     
-    /**
-     * Returns the content of a cURL handle if CURLOPT_RETURNTRANSFER is set.
-     * Equivalent to curl_multi_getcontent().
-     * Use it only when making parallel connections.
-     *
-     * @return string    Content of a cURL handle if CURLOPT_RETURNTRANSFER is set.
-     */
-    public function getContent()
+    protected function prepareQueue()
     {
-        return curl_multi_getcontent($this->ch);
+        if (!isset($this->queue)) {
+            $request = $this;
+            $this->queue = new RequestsQueue;
+            $this->queue->addListener('complete', function ($event) use ($request) {
+                $request->dispatch('complete', $event);
+            });
+            $this->queue->attach($this);
+        }
+    }
+    
+    public function socketPerform()
+    {
+        $this->prepareQueue();
+        return $this->queue->socketPerform();
+    }
+    
+    public function socketSelect($timeout = 1)
+    {
+        if (!isset($this->queue)) {
+            throw new Exception('Cannot select without perform before.');
+        }
+        return $this->queue->socketSelect($timeout);
     }
 }
