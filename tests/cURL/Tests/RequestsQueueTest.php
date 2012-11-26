@@ -34,17 +34,17 @@ class RequestsQueueTest extends TestCase
         $queue = new cURL\RequestsQueue;
         $queue->getDefaultOptions()
             ->set(CURLOPT_RETURNTRANSFER, true)
-            ->set(CURLOPT_USERAGENT, 'browser')
             ->set(CURLOPT_ENCODING, '');
         $queue->addListener(
             'complete',
             function (cURL\Event $event) use ($test) {
-                $test->validateSuccesfulResponse($event->response);
+                $test->validateSuccesfulResponse($event->request->_path, $event->response);
             }
         );
         
         for ($i = 0; $i < 5; $i++) {
             $request = new cURL\Request;
+            $request->_path = '/'.$i;
             $request->getOptions()->set(CURLOPT_URL, $this->okTestUrl.$i);
             $queue->attach($request);
         }
@@ -84,5 +84,68 @@ class RequestsQueueTest extends TestCase
         } catch (cURL\Exception $e) {}
         
         $this->assertInstanceOf('cURL\Exception', $e);
+    }
+    
+    /**
+     * Test requests attaching on run time
+     * 
+     * @return void
+     */
+    public function testRepeatOnRuntime()
+    {
+        $n = 0;
+        $queue = $this->prepareTestQueue();
+        $queue->addListener(
+            'complete',
+            function (cURL\Event $event) use (&$n) {
+                $n++;
+                $request = $event->request;
+                $queue = $event->queue;
+                if (!isset($request->repeat)) {
+                    $request->repeat = true;
+                    $queue->attach($request);
+                }
+            }
+        );
+        $queue->send();
+        $this->assertEquals(10, $n);
+    }
+    
+    /**
+     * Test requests attaching on run time
+     * 
+     * @return void
+     */
+    public function testAttachNewOnRuntime()
+    {
+        $total = 10;
+        $test = $this;        
+        $queue = new cURL\RequestsQueue;
+        $queue->getDefaultOptions()
+            ->set(CURLOPT_RETURNTRANSFER, true)
+            ->set(CURLOPT_ENCODING, '');
+            
+        
+        $n = 0;
+        $attachNew = function () use ($queue, &$n, $total) {
+            if ($n < $total) {
+                $n++;
+                $request = new cURL\Request;
+                $request->_path = '/'.$n;
+                $request->getOptions()->set(CURLOPT_URL, $this->okTestUrl.$n);
+                $queue->attach($request);
+            }
+        };
+        
+        $attachNew();
+        $queue->addListener(
+            'complete',
+            function (cURL\Event $event) use (&$requests, $test, $attachNew) {
+                $test->validateSuccesfulResponse($event->request->_path, $event->response);
+                $attachNew();
+            }
+        );
+        $queue->send();
+        $this->assertEquals($total, $n);
     }
 }

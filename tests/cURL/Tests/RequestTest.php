@@ -38,7 +38,7 @@ class RequestTest extends TestCase
             ->set(CURLOPT_URL, $this->okTestUrl)
             ->set(CURLOPT_RETURNTRANSFER, true);
         $this->assertInternalType('resource', $req->getHandle());
-        $this->validateSuccesfulResponse($req->send());
+        $this->validateSuccesfulResponse('/', $req->send());
         
         /**
          * Error request
@@ -65,7 +65,7 @@ class RequestTest extends TestCase
             ->set(CURLOPT_URL, $this->okTestUrl)
             ->set(CURLOPT_RETURNTRANSFER, true);
         $req->addListener('complete', function ($event) use ($test) {
-            $test->validateSuccesfulResponse($event->response);
+            $test->validateSuccesfulResponse('/', $event->response);
         });
         
         $n = 0;

@@ -18,16 +18,20 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     /**
      * @var int Amount of requests running
      */
-    protected $running = 0;
+    protected $runningCount = 0;
     
     /**
      * @var array Array of requests attached
      */
-    protected $requests = array();
+    protected $queue = array();
+    
+    /**
+     * @var array Array of requests running
+     */
+    protected $running = array();
     
     /**
      * Constructor
-     * Utilise curl_multi_init()
      *
      * @return void
      */
@@ -37,8 +41,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     }
     
     /**
-     * Destructor
-     * Utilise curl_multi_close()
+     * Destructor, closes curl_multi handler
      *
      * @return void
      */
@@ -86,58 +89,58 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     
     /**
      * Attach request to queue.
-     * Utilise curl_multi_add_handle().
      *
      * @param Request $request Request to add
      *
-     * @return int Returns 0 on success, or one of the CURLM_XXX errors code.
+     * @return self
      */
     public function attach(Request $request)
     {
-        /* If timeStart exists it means request is added on runtime */
-        if (isset($request->timeStart)) {
-            $request->timeStart = microtime(true);
-        }
-        
-        $this->requests[$request->getUID()] = $request;
-        return curl_multi_add_handle($this->mh, $request->getHandle());
+        $this->queue[$request->getUID()] = $request;
+        return $this;
     }
     
     /**
-     * Detach request from pool.
-     * Utilise curl_multi_remove_handle().
+     * Detach request from queue.
      *
      * @param Request $request Request to remove
      *
-     * @return int Returns 0 on success, or one of the CURLM_XXX errors code.
+     * @return self
      */
     public function detach(Request $request)
     {
-        unset($this->requests[$request->getUID()]);
-        return curl_multi_remove_handle($this->mh, $request->getHandle());
+        unset($this->queue[$request->getUID()]);
+        return $this;
     }
     
     /**
      * Processes handles which are ready and removes them from pool.
      *
-     * @return void
+     * @return int Amount of requests completed
      */
     protected function read()
     {
+        $n = 0;
         while ($info = curl_multi_info_read($this->mh)) {
-            $ch = $info['handle'];
-            $request = $this->requests[(int)$ch];
+            $n++;
+            $request = $this->queue[(int)$info['handle']];
+            $result = $info['result'];
+            
+            curl_multi_remove_handle($this->mh, $request->getHandle());
+            unset($this->running[$request->getUID()]);
             $this->detach($request);
             
             $event = new Event;
             $event->request = $request;
             $event->response = new Response($request, curl_multi_getcontent($request->getHandle()));
-            if ($info['result'] !== CURLE_OK) {
-                $event->response->setError(new Error(curl_error($ch), $info['result']));
+            if ($result !== CURLE_OK) {
+                $event->response->setError(new Error(curl_error($request->getHandle()), $result));
             }
             $event->queue = $this;
             $this->dispatch('complete', $event);
         }
+        
+        return $n;
     }
     
     /**
@@ -147,11 +150,11 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
      */
     public function count()
     {
-        return count($this->requests);
+        return count($this->queue);
     }
     
     /**
-     * Sends requests in parallel
+     * Executes requests in parallel
      *
      * @return void
      */
@@ -165,6 +168,16 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     }
     
     /**
+     * Returns requests present in $queue but not in $running
+     * 
+     * @return array    Array of requests
+     */
+    protected function getRequestsNotRunning()
+    {
+        return array_diff_key($this->queue, $this->running);
+    }
+    
+    /**
      * Download available data on socket.
      * 
      * @return bool    TRUE when there are any requests on queue, FALSE when finished
@@ -175,23 +188,30 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
             throw new Exception('Cannot perform if there are no requests in queue.');
         }
         
-        foreach ($this->requests as $k => $request) {
-            if (!$request->_running) {
+        
+        $notRunning = $this->getRequestsNotRunning();
+        do {
+            /**
+             * Apply cURL options to new requests
+             */
+            foreach ($notRunning as $request) {
                 $this->getDefaultOptions()->applyTo($request);
                 $request->getOptions()->applyTo($request);
-                $request->_running = true;
+                curl_multi_add_handle($this->mh, $request->getHandle());
+                $this->running[$request->getUID()] = $request;
             }
-        }
+            
+            $runningBefore = $this->runningCount;
+            do {
+                $mrc = curl_multi_exec($this->mh, $this->runningCount);
+            } while ($mrc === CURLM_CALL_MULTI_PERFORM);
+            $runningAfter = $this->runningCount;
+            
+            $completed = ($runningAfter < $runningBefore) ? $this->read() : 0;
+            
+            $notRunning = $this->getRequestsNotRunning();
+        } while (count($notRunning) > 0);
         
-        $before = $this->running;
-        do {
-            $mrc = curl_multi_exec($this->mh, $this->running);
-        } while ($mrc === CURLM_CALL_MULTI_PERFORM);
-        $after = $this->running;
-        
-        if ($after < $before) {
-            $this->read();
-        }
         
         return $this->count() > 0;
     }

@@ -6,7 +6,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected $okTestUrl = 'http://localhost:55555/';
     protected $errorTestUrl = 'http://localhost:55555/timeout';
     
-    public function validateSuccesfulResponse($response)
+    public function validateSuccesfulResponse($path, $response)
     {
         $content = $response->getContent();
         $data = json_decode($content, true);
@@ -15,6 +15,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $info = $response->getInfo();
         $this->assertInternalType('array', $info);
         $this->assertEquals(200, $info['http_code']);
+        $this->assertEquals($path, $data['url']['path']);
         $this->assertEquals(200, $response->getInfo(CURLINFO_HTTP_CODE));
         $this->assertFalse($response->hasError());
     }

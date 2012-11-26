@@ -163,6 +163,42 @@ The above example will output something like that:
 ***Kool & The Gang - Fresh - 2004
 **U2 - With Or Without You
 ```
+###Adding new requests on runtime
+```php
+$requests = array();
+$videos = array('tv0IEwypXkY', 'p8EH1_jZBl4', 'pXxwxEb3akc', 'Fh-O6nvQr9Q', '31vXOeV67PQ');
+foreach ($videos as $id) {
+    $requests[] = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/'.$id.'?v=2&alt=json');
+}
+
+$queue = new \cURL\RequestsQueue;
+$queue
+    ->getDefaultOptions()
+    ->set(CURLOPT_RETURNTRANSFER, true);
+
+$queue->addListener('complete', function (\cURL\Event $event) use (&$requests) {
+    $response = $event->response;
+    $json = $response->getContent(); // Returns content of response
+    $feed = json_decode($json, true);
+    echo $feed['entry']['title']['$t'] . "\n";
+    
+    $next = array_pop($requests);
+    if ($next) {
+        $event->queue->attach($next);
+    }
+});
+
+$queue->attach(array_pop($requests));
+$queue->send();
+```
+The above example will output something like that:
+```
+Kid Cudi - Cudi Zone
+Kid Cudi-I Be High
+Kid Cudi - Marijuana
+Kid Cudi - Trapped In My Mind (HQ)
+KiD Cudi - Don't Play This Song **LYRICS** [ Man On The Moon II ]
+```
 ###Intelligent Options setting
 Replace `CURLOPT_*` with `set*()` and you will receive method name.
 Examples:
