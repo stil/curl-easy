@@ -1,7 +1,8 @@
 <?php
 namespace cURL\Tests;
-use cURL\Options,
-    cURL\Exception;
+
+use cURL\Options;
+use cURL\Exception;
 
 class OptionsTest extends TestCase
 {
@@ -44,7 +45,8 @@ class OptionsTest extends TestCase
         $opts = new Options;
         try {
             $val = $opts->get(CURLOPT_ENCODING);
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         $this->assertInstanceOf('cURL\Exception', $e);
     }
     
@@ -75,7 +77,8 @@ class OptionsTest extends TestCase
         $opts->setUserAgent('browser');
         try {
             $opts->setUserAgentt('browser');
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         $this->assertInstanceOf('cURL\Exception', $e);
         $this->assertsForSet($opts);
     }

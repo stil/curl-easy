@@ -1,7 +1,8 @@
 <?php
 namespace cURL;
-use Symfony\Component\EventDispatcher\EventDispatcher,
-    Countable;
+
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Countable;
 
 class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, Countable
 {
@@ -231,6 +232,6 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
         if ($this->count() == 0) {
             throw new Exception('Cannot select if there are no requests in queue.');
         }
-        return curl_multi_select($this->mh, $timeout) !== -1; 
+        return curl_multi_select($this->mh, $timeout) !== -1;
     }
 }

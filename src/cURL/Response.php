@@ -27,7 +27,8 @@ class Response
     /**
      * Get information regarding a current transfer
      * If opt is given, returns its value as a string
-     * Otherwise, returns an associative array with the following elements (which correspond to opt), or FALSE on failure.
+     * Otherwise, returns an associative array with
+     * the following elements (which correspond to opt), or FALSE on failure.
      *
      * @param int $key One of the CURLINFO_* constants
      *

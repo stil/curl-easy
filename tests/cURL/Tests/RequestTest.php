@@ -1,5 +1,6 @@
 <?php
 namespace cURL\Tests;
+
 use cURL;
 
 class RequestTest extends TestCase
@@ -64,9 +65,12 @@ class RequestTest extends TestCase
         $req->getOptions()
             ->set(CURLOPT_URL, $this->okTestUrl)
             ->set(CURLOPT_RETURNTRANSFER, true);
-        $req->addListener('complete', function ($event) use ($test) {
-            $test->validateSuccesfulResponse('/', $event->response);
-        });
+        $req->addListener(
+            'complete',
+            function ($event) use ($test) {
+                $test->validateSuccesfulResponse('/', $event->response);
+            }
+        );
         
         $n = 0;
         while ($req->socketPerform()) {
@@ -76,7 +80,8 @@ class RequestTest extends TestCase
         
         try {
             $req->socketPerform();
-        } catch (cURL\Exception $e) {}
+        } catch (cURL\Exception $e) {
+        }
         
         $this->assertInstanceOf('cURL\Exception', $e);
         $this->assertGreaterThan(0, $n);
@@ -86,9 +91,12 @@ class RequestTest extends TestCase
             ->set(CURLOPT_URL, $this->errorTestUrl)
             ->set(CURLOPT_TIMEOUT, 1)
             ->set(CURLOPT_RETURNTRANSFER, true);
-        $req->addListener('complete', function ($event) use ($test) {
-            $test->validateTimeoutedResponse($event->response);
-        });
+        $req->addListener(
+            'complete',
+            function ($event) use ($test) {
+                $test->validateTimeoutedResponse($event->response);
+            }
+        );
         
         while ($req->socketPerform()) {
             $req->socketSelect();

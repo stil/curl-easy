@@ -34,7 +34,7 @@ class Options extends Collection
         $constants = get_defined_constants(true);
         $table = array();
         foreach ($constants['curl'] as $key => $value) {
-            if (strpos($key, 'CURLOPT_') === 0) {                
+            if (strpos($key, 'CURLOPT_') === 0) {
                 $key = str_ireplace(array('CURLOPT', '_'), '', $key);
                 $table[$key] = $value;
             }

@@ -1,14 +1,10 @@
 <?php
 namespace cURL;
+
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Request extends EventDispatcher implements RequestInterface
 {
-    /**
-     * @var bool Determines if Request is running in queue. For internal use.
-     */
-    public $_running;
-    
     /**
      * @var resource cURL handler
      */
@@ -128,9 +124,12 @@ class Request extends EventDispatcher implements RequestInterface
         if (!isset($this->queue)) {
             $request = $this;
             $this->queue = new RequestsQueue;
-            $this->queue->addListener('complete', function ($event) use ($request) {
-                $request->dispatch('complete', $event);
-            });
+            $this->queue->addListener(
+                'complete',
+                function ($event) use ($request) {
+                    $request->dispatch('complete', $event);
+                }
+            );
             $this->queue->attach($this);
         }
     }

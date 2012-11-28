@@ -1,5 +1,6 @@
 <?php
 namespace cURL\Tests;
+
 use cURL;
 
 class RequestsQueueTest extends TestCase
@@ -81,7 +82,8 @@ class RequestsQueueTest extends TestCase
         
         try {
             $queue->socketPerform();
-        } catch (cURL\Exception $e) {}
+        } catch (cURL\Exception $e) {
+        }
         
         $this->assertInstanceOf('cURL\Exception', $e);
     }
@@ -119,7 +121,7 @@ class RequestsQueueTest extends TestCase
     public function testAttachNewOnRuntime()
     {
         $total = 10;
-        $test = $this;        
+        $test = $this;
         $queue = new cURL\RequestsQueue;
         $queue->getDefaultOptions()
             ->set(CURLOPT_RETURNTRANSFER, true)
