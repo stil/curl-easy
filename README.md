@@ -41,13 +41,9 @@ It also requires PHP 5.3 or newer and Symfony's EventDispatcher 2.1.* or newer.
 [Composer](http://getcomposer.org) is recommended for installation.
 ```json
 {
-  "repositories": [{
-    "type": "vcs",
-      "url": "git://github.com/stil/curl-easy.git"
-  }],
     "require": {
-    "stil/curl-easy": "*"
-  }
+        "stil/curl-easy": "*"
+    }
 }
 ```
 ##Examples
