@@ -77,7 +77,7 @@ $request->addListener('complete', function (\cURL\Event $event) {
 
 
 while ($request->socketPerform()) {
-    // do anything else when te requests are processed
+    // do anything else when the requests are processed
     $request->socketSelect();
     // line below pauses execution until there's new data on socket
 }
