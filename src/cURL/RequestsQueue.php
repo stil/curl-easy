@@ -162,9 +162,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     public function send()
     {
         while ($this->socketPerform()) {
-            if (!$this->socketSelect()) {
-                return;
-            }
+            $this->socketSelect();
         }
     }
     
