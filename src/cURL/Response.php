@@ -52,7 +52,7 @@ class Response
     /**
      * Returns Headers of request
      * 
-     * @return Array
+     * @return Array Headers
      */
     public function getHeaders()
     {
