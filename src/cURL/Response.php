@@ -48,6 +48,25 @@ class Response
     {
         return $this->content;
     }
+	
+    /**
+     * Returns Headers of request
+     * 
+     * @return Array Headers
+     */
+    public function getHeaders()
+    {
+		$HeaderSize = $this->getInfo()['header_size'];
+		
+		$RawHeaders 	= substr($this->content, 0, $HeaderSize);
+		$this->content 	= substr($this->content, $HeaderSize); // Reset & Strip Headers from content
+		
+		if ( preg_match_all('/(.*?): (.*?)\r\n/i', $RawHeaders, $matches) ) {
+			$Headers = array_combine($matches[1], $matches[2]);
+		}
+		
+		return $Headers;
+    }
     
     /**
      * Sets error instance
