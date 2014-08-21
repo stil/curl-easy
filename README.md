@@ -11,7 +11,7 @@
     * [Request::getContent](#requestgetcontent)
     * [Request::getInfo](#requestgetinfo)
     * [Request::send](#requestsend)
-* [cURL\RequesstQueue](#curlrequestsqueue)
+* [cURL\RequestQueue](#curlrequestsqueue)
     * [RequestsQueue::__construct](#requestsqueue__construct)
     * [RequestsQueue::getDefaultOptions](#requestsqueuegetdefaultoptions)
     * [RequestsQueue::setDefaultOptions](#requestsqueuesetdefaultoptions)
@@ -253,7 +253,7 @@ You can find all of CURLE_* error codes [here](http://php.net/manual/en/curl.con
 ###RequestsQueue::socketPerform
 ###RequestsQueue::socketSelect
 ###Request::send
-##cURL\RequesstQueue
+##cURL\RequestQueue
 ###RequestsQueue::__construct
 ###RequestsQueue::getDefaultOptions
 ###RequestsQueue::setDefaultOptions
