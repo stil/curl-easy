@@ -25,6 +25,7 @@
 ##Introduction
 ###Description
 This is small but powerful and robust library which speeds the things up. If you are tired of using PHP cURL extension with its procedural interface, but you want also keep control about script execution - it's great choice for you!
+If you need high speed crawling in your project, you might be interested in stil/curl-easy extension - [stil/curl-robot](https://github.com/stil/curl-robot).
 ###Main features
 * widely unit tested.
 * lightweight library with moderate level interface. It's not all-in-one library.
