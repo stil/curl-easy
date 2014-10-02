@@ -45,9 +45,28 @@ class Request extends EventDispatcher implements RequestInterface
     public function __destruct()
     {
         if (isset($this->ch)) {
-            curl_close($this->ch);
+            $this->close();
         }
     }
+	
+	/**
+     * Closes cURL resource and frees the memory.
+     * Explicitly unsets the handle and closes
+	 * the RequestsQueus as well
+     *
+     * @return void
+     */
+	public function close()
+	{
+		curl_close($this->ch);
+		unset($this->ch);
+		
+		if (isset($this->queue))
+		{
+			$this->queue->close();
+			unset($this->queue);
+		}
+	}
     
     /**
      * Get the cURL\Options instance
