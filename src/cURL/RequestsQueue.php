@@ -47,9 +47,20 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     public function __destruct()
     {
         if (isset($this->mh)) {
-            curl_multi_close($this->mh);
+            $this->close();
         }
     }
+	
+	/**
+	 * Close the curl_multi handler and unset
+	 * 
+	 * @return void
+	 */
+	public function close()
+	{
+		curl_multi_close($this->mh);
+		unset($this->mh);
+	}
     
     /**
      * Returns cURL\Options object with default request's options
