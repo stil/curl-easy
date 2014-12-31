@@ -12,8 +12,6 @@ class Response
      * 
      * @param Request $request Request
      * @param string  $content Content of reponse
-     * 
-     * @return void
      */
     public function __construct(Request $request, $content = null)
     {
@@ -31,7 +29,6 @@ class Response
      * the following elements (which correspond to opt), or FALSE on failure.
      *
      * @param int $key One of the CURLINFO_* constants
-     *
      * @return mixed
      */
     public function getInfo($key = null)
@@ -53,7 +50,6 @@ class Response
      * Sets error instance
      * 
      * @param Error $error Error to set
-     * 
      * @return void
      */
     public function setError(Error $error)

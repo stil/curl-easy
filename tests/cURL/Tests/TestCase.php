@@ -1,12 +1,14 @@
 <?php
 namespace cURL\Tests;
 
+use cURL\Response;
+
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected $okTestUrl = 'http://localhost:55555/';
     protected $errorTestUrl = 'http://localhost:55555/timeout';
     
-    public function validateSuccesfulResponse($path, $response)
+    public function validateSuccesfulResponse($path, Response $response)
     {
         $content = $response->getContent();
         $data = json_decode($content, true);
@@ -20,9 +22,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->assertFalse($response->hasError());
     }
     
-    public function validateTimeoutedResponse($response)
+    public function validateTimeoutedResponse(Response $response)
     {
-        $this->assertInternalType('null', $response->getContent());
+        $this->assertEmpty($response->getContent());
         $this->assertTrue($response->hasError());
         $this->assertEquals(CURLE_OPERATION_TIMEOUTED, $response->getError()->getCode());
         $this->assertNotEmpty($response->getError()->getMessage());

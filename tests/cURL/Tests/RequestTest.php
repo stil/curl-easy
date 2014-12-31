@@ -7,8 +7,6 @@ class RequestTest extends TestCase
 {
     /**
      * Test setOptions() and getOptions() methods
-     * 
-     * @return void
      */
     public function testSetGetOptions()
     {
@@ -26,8 +24,6 @@ class RequestTest extends TestCase
     
     /**
      * Test synchronous request through send()
-     * 
-     * @return void
      */
     public function testRequestSynchronous()
     {
@@ -54,8 +50,6 @@ class RequestTest extends TestCase
     
     /**
      * Test asynchronous request through socketPerform() and socketSelect()
-     * 
-     * @return void
      */
     public function testRequestAsynchronous()
     {
@@ -77,7 +71,8 @@ class RequestTest extends TestCase
             $n++;
             $req->socketSelect();
         }
-        
+
+        $e = null;
         try {
             $req->socketPerform();
         } catch (cURL\Exception $e) {

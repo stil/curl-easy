@@ -22,7 +22,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     protected $runningCount = 0;
     
     /**
-     * @var array Array of requests attached
+     * @var Request[] Array of requests attached
      */
     protected $queue = array();
     
@@ -32,9 +32,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     protected $running = array();
     
     /**
-     * Constructor
-     *
-     * @return void
+     * Initializes curl_multi handler
      */
     public function __construct()
     {
@@ -70,7 +68,6 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
      * Overrides default options with given Options object
      *
      * @param Options $defaultOptions New options
-     *
      * @return void
      */
     public function setDefaultOptions(Options $defaultOptions)
@@ -92,7 +89,6 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
      * Attach request to queue.
      *
      * @param Request $request Request to add
-     *
      * @return self
      */
     public function attach(Request $request)
@@ -105,7 +101,6 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
      * Detach request from queue.
      *
      * @param Request $request Request to remove
-     *
      * @return self
      */
     public function detach(Request $request)
@@ -169,7 +164,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     /**
      * Returns requests present in $queue but not in $running
      * 
-     * @return array    Array of requests
+     * @return Request[]    Array of requests
      */
     protected function getRequestsNotRunning()
     {
@@ -178,7 +173,8 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
     
     /**
      * Download available data on socket.
-     * 
+     *
+     * @throws Exception
      * @return bool    TRUE when there are any requests on queue, FALSE when finished
      */
     public function socketPerform()
@@ -186,8 +182,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
         if ($this->count() == 0) {
             throw new Exception('Cannot perform if there are no requests in queue.');
         }
-        
-        
+
         $notRunning = $this->getRequestsNotRunning();
         do {
             /**
@@ -221,8 +216,8 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, C
      * return FALSE on a select failure or timeout (from the underlying
      * select system call)
      * 
-     * @param float $timeout Maximum time to wait
-     * 
+     * @param float|int $timeout Maximum time to wait
+     * @throws Exception
      * @return bool
      */
     public function socketSelect($timeout = 1)

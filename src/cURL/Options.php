@@ -10,9 +10,8 @@ class Options extends Collection
     
     /**
      * Applies options to Request object
-     * 
+     *
      * @param Request $request
-     * 
      * @return self
      */
     public function applyTo(Request $request)
@@ -26,7 +25,7 @@ class Options extends Collection
     
     /**
      * Prepares array for intelligent setters
-     * 
+     *
      * @return void
      */
     public static function loadCurlConstantsTable()
@@ -44,10 +43,10 @@ class Options extends Collection
     
     /**
      * Intelligent setters
-     * 
+     *
      * @param string $name Function name
      * @param array $args Arguments
-     * 
+     * @throws Exception Invalid CURLOPT_ constant has been specified
      * @return self
      */
     public function __call($name, $args)

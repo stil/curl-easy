@@ -7,12 +7,10 @@ class RequestsQueueTest extends TestCase
 {
     /**
      * Test setDefaultOptions() and getDefaultOptions()
-     * 
-     * @return void
      */
     public function testOptions()
     {
-        $q = new cURL\RequestsQueue;
+        $q = new cURL\RequestsQueue();
         $opts = $q->getDefaultOptions();
         $this->assertInstanceOf('cURL\Options', $opts);
         $this->assertEmpty($opts->toArray());
@@ -27,12 +25,12 @@ class RequestsQueueTest extends TestCase
     /**
      * Returns RequestsQueue for tests
      * 
-     * @return RequestsQueue    Queue for tests
+     * @return cURL\RequestsQueue    Queue for tests
      */
     protected function prepareTestQueue()
     {
         $test = $this;
-        $queue = new cURL\RequestsQueue;
+        $queue = new cURL\RequestsQueue();
         $queue->getDefaultOptions()
             ->set(CURLOPT_RETURNTRANSFER, true)
             ->set(CURLOPT_ENCODING, '');
@@ -44,7 +42,7 @@ class RequestsQueueTest extends TestCase
         );
         
         for ($i = 0; $i < 5; $i++) {
-            $request = new cURL\Request;
+            $request = new cURL\Request();
             $request->_path = '/'.$i;
             $request->getOptions()->set(CURLOPT_URL, $this->okTestUrl.$i);
             $queue->attach($request);
@@ -58,8 +56,6 @@ class RequestsQueueTest extends TestCase
     
     /**
      * Test request synchronous
-     * 
-     * @return void
      */
     public function testQueueSynchronous()
     {
@@ -69,8 +65,6 @@ class RequestsQueueTest extends TestCase
     
     /**
      * Test request asynchronous
-     * 
-     * @return void
      */
     public function testQueueAsynchronous()
     {
@@ -79,7 +73,8 @@ class RequestsQueueTest extends TestCase
         while ($queue->socketPerform()) {
             $queue->socketSelect();
         }
-        
+
+        $e = null;
         try {
             $queue->socketPerform();
         } catch (cURL\Exception $e) {
@@ -90,8 +85,6 @@ class RequestsQueueTest extends TestCase
     
     /**
      * Test requests attaching on run time
-     * 
-     * @return void
      */
     public function testRepeatOnRuntime()
     {
@@ -115,14 +108,12 @@ class RequestsQueueTest extends TestCase
     
     /**
      * Test requests attaching on run time
-     * 
-     * @return void
      */
     public function testAttachNewOnRuntime()
     {
         $total = 10;
         $test = $this;
-        $queue = new cURL\RequestsQueue;
+        $queue = new cURL\RequestsQueue();
         $queue->getDefaultOptions()
             ->set(CURLOPT_RETURNTRANSFER, true)
             ->set(CURLOPT_ENCODING, '');
@@ -132,7 +123,7 @@ class RequestsQueueTest extends TestCase
         $attachNew = function () use ($queue, &$n, $total) {
             if ($n < $total) {
                 $n++;
-                $request = new cURL\Request;
+                $request = new cURL\Request();
                 $request->_path = '/'.$n;
                 $request->getOptions()->set(CURLOPT_URL, $this->okTestUrl.$n);
                 $queue->attach($request);

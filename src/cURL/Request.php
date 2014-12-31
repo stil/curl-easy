@@ -24,8 +24,6 @@ class Request extends EventDispatcher implements RequestInterface
      * Create new cURL handle
      *
      * @param string $url The URL to fetch.
-     *
-     * @return void
      */
     public function __construct($url = null)
     {
@@ -39,8 +37,6 @@ class Request extends EventDispatcher implements RequestInterface
      * Closes cURL resource and frees the memory.
      * It is neccessary when you make a lot of requests
      * and you want to avoid fill up the memory.
-     *
-     * @return void
      */
     public function __destruct()
     {
@@ -67,7 +63,6 @@ class Request extends EventDispatcher implements RequestInterface
      * Sets Options
      * 
      * @param Options $options Options
-     * 
      * @return void
      */
     public function setOptions(Options $options)

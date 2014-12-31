@@ -10,7 +10,7 @@ class Collection
     
     /**
      * Converts current object to array
-     * 
+     *
      * @return array
      */
     public function toArray()
@@ -20,10 +20,9 @@ class Collection
     
     /**
      * Sets value
-     * 
+     *
      * @param mixed $key Key   
      * @param mixed $value Value
-     * 
      * @return self
      */
     public function set($key, $value = null)
@@ -40,9 +39,8 @@ class Collection
     
     /**
      * Checks if key does exist
-     * 
+     *
      * @param mixed $key Key
-     * 
      * @return bool    TRUE if exists, FALSE otherwise
      */
     public function has($key)
@@ -51,10 +49,10 @@ class Collection
     }
     
     /**
-     * Returns value of $key, throws Exception if does not exist
-     * 
+     * Returns value of $key
+     *
      * @param mixed $key Key
-     * 
+     * @throws Exception Key does not exist
      * @return mixed    Value of key
      */
     public function get($key)
@@ -68,9 +66,8 @@ class Collection
     
     /**
      * Removes key
-     * 
+     *
      * @param mixed $key Key to remove
-     * 
      * @return self
      */
     public function remove($key)

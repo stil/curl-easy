@@ -8,20 +8,20 @@ class OptionsTest extends TestCase
 {
     public function testConstruction()
     {
-        $opts = new Options;
+        $opts = new Options();
         $this->assertInstanceOf('cURL\Options', $opts);
     }
     
     public function testToArray()
     {
-        $opts = new Options;
+        $opts = new Options();
         $array = $opts->toArray();
         
         $this->assertInternalType('array', $array);
         $this->assertEmpty($array);
     }
     
-    protected function assertsForSet($opts)
+    protected function assertsForSet(Options $opts)
     {
         $array = $opts->toArray();
         $this->assertEquals(2, count($array));
@@ -42,9 +42,10 @@ class OptionsTest extends TestCase
     
     public function testMissingOption()
     {
-        $opts = new Options;
+        $opts = new Options();
+        $e = null;
         try {
-            $val = $opts->get(CURLOPT_ENCODING);
+            $opts->get(CURLOPT_ENCODING);
         } catch (Exception $e) {
         }
         $this->assertInstanceOf('cURL\Exception', $e);
@@ -52,7 +53,7 @@ class OptionsTest extends TestCase
     
     public function testSingleSet()
     {
-        $opts = new Options;
+        $opts = new Options();
         $opts->set(CURLOPT_TIMEOUT, 123);
         $opts->set(CURLOPT_USERAGENT, 'browser');
         $this->assertsForSet($opts);
@@ -60,7 +61,7 @@ class OptionsTest extends TestCase
     
     public function testArraySet()
     {
-        $opts = new Options;
+        $opts = new Options();
         $opts->set(
             array(
                 CURLOPT_TIMEOUT => 123,
@@ -72,9 +73,11 @@ class OptionsTest extends TestCase
     
     public function testIntelligentSet()
     {
-        $opts = new Options;
+        $opts = new Options();
         $opts->setTimeout(123);
         $opts->setUserAgent('browser');
+
+        $e = null;
         try {
             $opts->setUserAgentt('browser');
         } catch (Exception $e) {
@@ -85,7 +88,7 @@ class OptionsTest extends TestCase
     
     public function testRemove()
     {
-        $opts = new Options;
+        $opts = new Options();
         $opts->set(CURLOPT_TIMEOUT, 123);
         $opts->set(CURLOPT_USERAGENT, 'browser');
         
