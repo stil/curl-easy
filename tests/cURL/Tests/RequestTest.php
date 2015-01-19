@@ -10,12 +10,12 @@ class RequestTest extends TestCase
      */
     public function testSetGetOptions()
     {
-        $req = new cURL\Request;
+        $req = new cURL\Request();
         $opts = $req->getOptions();
         $this->assertInstanceOf('cURL\Options', $opts);
         $this->assertEmpty($opts->toArray());
         
-        $opts = new cURL\Options;
+        $opts = new cURL\Options();
         $opts->set(CURLOPT_RETURNTRANSFER, true);
         $req->setOptions($opts);
         $this->assertEquals($opts, $req->getOptions());
@@ -30,20 +30,20 @@ class RequestTest extends TestCase
         /**
          * Successful request
          */
-        $req = new cURL\Request;
+        $req = new cURL\Request();
         $req->getOptions()
-            ->set(CURLOPT_URL, $this->okTestUrl)
+            ->set(CURLOPT_URL, $this->createRequestUrl())
             ->set(CURLOPT_RETURNTRANSFER, true);
         $this->assertInternalType('resource', $req->getHandle());
-        $this->validateSuccesfulResponse('/', $req->send());
+        $this->validateSuccesfulResponse($req->send());
         
         /**
-         * Error request
+         * Timeouted request
          */
-        $req = new cURL\Request;
+        $req = new cURL\Request();
         $req->getOptions()
-            ->set(CURLOPT_URL, $this->errorTestUrl)
-            ->set(CURLOPT_TIMEOUT, 1)
+            ->set(CURLOPT_URL, $this->timeoutTestUrl)
+            ->set(CURLOPT_TIMEOUT, 3)
             ->set(CURLOPT_RETURNTRANSFER, true);
         $this->validateTimeoutedResponse($req->send());
     }
@@ -55,14 +55,14 @@ class RequestTest extends TestCase
     {
         $test = $this;
         
-        $req = new cURL\Request;
+        $req = new cURL\Request();
         $req->getOptions()
-            ->set(CURLOPT_URL, $this->okTestUrl)
+            ->set(CURLOPT_URL, $this->createRequestUrl())
             ->set(CURLOPT_RETURNTRANSFER, true);
         $req->addListener(
             'complete',
             function ($event) use ($test) {
-                $test->validateSuccesfulResponse('/', $event->response);
+                $test->validateSuccesfulResponse($event->response);
             }
         );
         
@@ -81,10 +81,10 @@ class RequestTest extends TestCase
         $this->assertInstanceOf('cURL\Exception', $e);
         $this->assertGreaterThan(0, $n);
         
-        $req = new cURL\Request;
+        $req = new cURL\Request();
         $req->getOptions()
-            ->set(CURLOPT_URL, $this->errorTestUrl)
-            ->set(CURLOPT_TIMEOUT, 1)
+            ->set(CURLOPT_URL, $this->timeoutTestUrl)
+            ->set(CURLOPT_TIMEOUT, 3)
             ->set(CURLOPT_RETURNTRANSFER, true);
         $req->addListener(
             'complete',

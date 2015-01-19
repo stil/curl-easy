@@ -15,7 +15,7 @@ class RequestsQueueTest extends TestCase
         $this->assertInstanceOf('cURL\Options', $opts);
         $this->assertEmpty($opts->toArray());
         
-        $opts = new cURL\Options;
+        $opts = new cURL\Options();
         $opts->set(CURLOPT_URL, 'http://example-1/');
         $opts->set(CURLOPT_USERAGENT, 'browser');
         $q->setDefaultOptions($opts);
@@ -37,14 +37,14 @@ class RequestsQueueTest extends TestCase
         $queue->addListener(
             'complete',
             function (cURL\Event $event) use ($test) {
-                $test->validateSuccesfulResponse($event->request->_path, $event->response);
+                $test->validateSuccesfulResponse($event->response, $event->request->_param);
             }
         );
         
         for ($i = 0; $i < 5; $i++) {
             $request = new cURL\Request();
-            $request->_path = '/'.$i;
-            $request->getOptions()->set(CURLOPT_URL, $this->okTestUrl.$i);
+            $request->_param = $i;
+            $request->getOptions()->set(CURLOPT_URL, $this->createRequestUrl($i));
             $queue->attach($request);
         }
         
@@ -124,8 +124,8 @@ class RequestsQueueTest extends TestCase
             if ($n < $total) {
                 $n++;
                 $request = new cURL\Request();
-                $request->_path = '/'.$n;
-                $request->getOptions()->set(CURLOPT_URL, $this->okTestUrl.$n);
+                $request->_param = $n;
+                $request->getOptions()->set(CURLOPT_URL, $this->createRequestUrl($n));
                 $queue->attach($request);
             }
         };
@@ -134,7 +134,7 @@ class RequestsQueueTest extends TestCase
         $queue->addListener(
             'complete',
             function (cURL\Event $event) use (&$requests, $test, $attachNew) {
-                $test->validateSuccesfulResponse($event->request->_path, $event->response);
+                $test->validateSuccesfulResponse($event->response, $event->request->_param);
                 $attachNew();
             }
         );

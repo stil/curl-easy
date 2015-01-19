@@ -1,0 +1,13 @@
+<phpunit bootstrap="tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         stopOnFailure="false"
+>
+    <testsuites>
+        <testsuite name="curl-easy">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
