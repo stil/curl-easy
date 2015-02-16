@@ -6,6 +6,21 @@ use cURL;
 class RequestsQueueTest extends TestCase
 {
     /**
+     * Test run queue without any requests
+     */
+    public function testSendNoRequests()
+    {
+        $bool = false;
+        try {
+            $q = new cURL\RequestsQueue();
+            $q->send();
+        } catch (cURL\Exception $ex) {
+            $bool = true;
+        }
+        $this->assertTrue($bool);
+    }
+
+    /**
      * Test setDefaultOptions() and getDefaultOptions()
      */
     public function testOptions()
