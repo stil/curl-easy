@@ -54,7 +54,7 @@ class Request extends EventDispatcher implements RequestInterface
     public function getOptions()
     {
         if (!isset($this->options)) {
-            $this->options = new Options;
+            $this->options = new Options();
         }
         return $this->options;
     }
@@ -118,7 +118,7 @@ class Request extends EventDispatcher implements RequestInterface
     {
         if (!isset($this->queue)) {
             $request = $this;
-            $this->queue = new RequestsQueue;
+            $this->queue = new RequestsQueue();
             $this->queue->addListener(
                 'complete',
                 function ($event) use ($request) {
