@@ -97,6 +97,8 @@ class Request extends EventDispatcher implements RequestInterface
      * This function should be called after initializing a cURL
      * session and all the options for the session are set.
      *
+     * Warning: it doesn't fire 'complete' event.
+     *
      * @return Response
      */
     public function send()
@@ -113,32 +115,31 @@ class Request extends EventDispatcher implements RequestInterface
         }
         return $response;
     }
-    
-    protected function prepareQueue()
-    {
-        if (!isset($this->queue)) {
-            $request = $this;
-            $this->queue = new RequestsQueue();
-            $this->queue->addListener(
-                'complete',
-                function ($event) use ($request) {
-                    $request->dispatch('complete', $event);
-                }
-            );
-            $this->queue->attach($this);
-        }
-    }
-    
+
+    /**
+     * Creates new RequestsQueue with single Request attached to it
+     * and calls RequestsQueue::socketPerform() method.
+     *
+     * @see RequestsQueue::socketPerform()
+     */
     public function socketPerform()
     {
-        $this->prepareQueue();
+        if (!isset($this->queue)) {
+            $this->queue = new RequestsQueue();
+            $this->queue->attach($this);
+        }
         return $this->queue->socketPerform();
     }
-    
+
+    /**
+     * Calls socketSelect() on previously created RequestsQueue
+     *
+     * @see RequestsQueue::socketSelect()
+     */
     public function socketSelect($timeout = 1)
     {
         if (!isset($this->queue)) {
-            throw new Exception('Cannot select without perform before.');
+            throw new Exception('You need to call socketPerform() before.');
         }
         return $this->queue->socketSelect($timeout);
     }

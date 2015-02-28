@@ -97,4 +97,53 @@ class RequestTest extends TestCase
             $req->socketSelect();
         }
     }
+
+    /**
+     * Tests whether 'complete' event on individual Request has been fired
+     * once when using RequestsQueue
+     */
+    public function testRequestCompleteEventAsynchronous()
+    {
+        $eventFired = 0;
+
+        $req = new cURL\Request();
+        $req->getOptions()
+            ->set(CURLOPT_URL, $this->createRequestUrl())
+            ->set(CURLOPT_RETURNTRANSFER, true);
+        $req->addListener(
+            'complete',
+            function ($event) use (&$eventFired) {
+                $this->validateSuccesfulResponse($event->response);
+                $eventFired++;
+            }
+        );
+
+        while ($req->socketPerform()) {
+            $req->socketSelect();
+        }
+        $this->assertEquals(1, $eventFired);
+    }
+
+    /**
+     * Tests whether 'complete' event on individual Request has not been fired
+     * when Request::send() was used.
+     */
+    public function testRequestCompleteEventSynchronous()
+    {
+        $eventFired = 0;
+
+        $req = new cURL\Request();
+        $req->getOptions()
+            ->set(CURLOPT_URL, $this->createRequestUrl())
+            ->set(CURLOPT_RETURNTRANSFER, true);
+        $req->addListener(
+            'complete',
+            function (cURL\Event $event) use (&$eventFired) {
+                $eventFired++;
+            }
+        );
+
+        $req->send();
+        $this->assertEquals(0, $eventFired);
+    }
 }

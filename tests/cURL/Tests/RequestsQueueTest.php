@@ -156,4 +156,31 @@ class RequestsQueueTest extends TestCase
         $queue->send();
         $this->assertEquals($total, $n);
     }
+
+    /**
+     * Tests whether 'complete' event on individual Request has been fired
+     * when using RequestsQueue
+     */
+    public function testRequestCompleteEvent()
+    {
+        $eventFired = 0;
+
+        $req = new cURL\Request();
+        $req->getOptions()
+            ->set(CURLOPT_URL, $this->createRequestUrl())
+            ->set(CURLOPT_RETURNTRANSFER, true);
+        $req->addListener(
+            'complete',
+            function ($event) use (&$eventFired) {
+                $this->validateSuccesfulResponse($event->response);
+                $eventFired++;
+            }
+        );
+
+        $queue = new cURL\RequestsQueue();
+        $queue->attach($req);
+        $queue->send();
+
+        $this->assertEquals(1, $eventFired);
+    }
 }

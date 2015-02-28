@@ -133,6 +133,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             }
             $event->queue = $this;
             $this->dispatch('complete', $event);
+            $request->dispatch('complete', $event);
         }
         
         return $n;
