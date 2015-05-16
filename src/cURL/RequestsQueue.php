@@ -168,9 +168,11 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
      */
     protected function getRequestsNotRunning()
     {
-        return array_diff_key($this->queue, $this->running);
+        $map = $this->queue;
+        foreach($this->running as $k => $v) unset($map[$k]);
+        return $map;
     }
-    
+
     /**
      * Download available data on socket.
      *
