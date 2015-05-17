@@ -209,7 +209,8 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             
             $notRunning = $this->getRequestsNotRunning();
         } while (count($notRunning) > 0);
-        
+        // Why the loop? New requests might be added at runtime on 'complete' event.
+        // So we need to attach them to curl_multi handle immediately.
         
         return $this->count() > 0;
     }
