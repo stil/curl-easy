@@ -16,17 +16,12 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
     protected $mh;
     
     /**
-     * @var int Amount of requests running
-     */
-    protected $runningCount = 0;
-    
-    /**
      * @var Request[] Array of requests attached
      */
     protected $queue = array();
     
     /**
-     * @var array Array of requests running
+     * @var array Array of requests added to curl multi handle
      */
     protected $running = array();
     
@@ -196,14 +191,15 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
                 curl_multi_add_handle($this->mh, $request->getHandle());
                 $this->running[$request->getUID()] = $request;
             }
-            
-            $runningBefore = $this->runningCount;
-            do {
-                $mrc = curl_multi_exec($this->mh, $this->runningCount);
-            } while ($mrc === CURLM_CALL_MULTI_PERFORM);
-            $runningAfter = $this->runningCount;
 
-            if ($runningAfter < $runningBefore) {
+            $runningHandles = null;
+            do {
+                // http://curl.haxx.se/libcurl/c/curl_multi_perform.html
+                // If an added handle fails very quickly, it may never be counted as a running_handle.
+                $mrc = curl_multi_exec($this->mh, $runningHandles);
+            } while ($mrc === CURLM_CALL_MULTI_PERFORM);
+
+            if ($runningHandles < count($this->running)) {
                 $this->read();
             }
             

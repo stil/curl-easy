@@ -183,4 +183,22 @@ class RequestsQueueTest extends TestCase
 
         $this->assertEquals(1, $eventFired);
     }
+
+    /**
+     * Requests which fail very quickly might cause infinite loop and return no response.
+     * http://curl.haxx.se/libcurl/c/curl_multi_perform.html
+     * "If an added handle fails very quickly, it may never be counted as a running_handle."
+     * This test ensures that it won't loop and will return properly error code.
+     */
+    public function testErrorCode()
+    {
+        $request = new cURL\Request('');
+        $request->addListener('complete', function (cURL\Event $e) {
+            $this->assertEquals('<url> malformed', $e->response->getError()->getMessage());
+        });
+
+        $queue = new cURL\RequestsQueue();
+        $queue->attach($request);
+        $queue->send();
+    }
 }
