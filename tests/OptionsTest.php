@@ -85,6 +85,13 @@ class OptionsTest extends TestCase
         $this->assertInstanceOf('cURL\Exception', $e);
         $this->assertsForSet($opts);
     }
+
+    public function testFluentSetters()
+    {
+        $opts = new Options();
+        $opts->setTimeout(123)->setUserAgent('browser');
+        $opts->set(CURLOPT_TIMEOUT, 123)->set(CURLOPT_USERAGENT, 'browser');
+    }
     
     public function testRemove()
     {
