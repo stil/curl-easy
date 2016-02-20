@@ -9,9 +9,9 @@
         "phpunit/phpunit": "3.7.*"
     },
     "autoload": {
-        "psr-0": {
-            "cURL": "src/",
-            "cURL\\Tests": "tests/"
+        "psr-4": {
+            "cURL\\": "src/",
+            "cURL\\Tests\\": "tests/"
         }
     }
 }
