@@ -11,6 +11,10 @@
     "autoload": {
         "psr-4": {
             "cURL\\": "src/",
+        }
+    },
+    "autoload-dev": {
+         "psr-4": {
             "cURL\\Tests\\": "tests/"
         }
     }
