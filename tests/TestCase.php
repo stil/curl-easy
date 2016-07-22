@@ -5,8 +5,8 @@ use cURL\Response;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $okTestUrl = 'http://httpbin.org/get';
-    protected $timeoutTestUrl = 'http://httpbin.org/delay/10';
+    protected $okTestUrl = 'https://httpbin.org/get';
+    protected $timeoutTestUrl = 'https://httpbin.org/delay/10';
 
     public function createRequestUrl($param = 'ok')
     {
