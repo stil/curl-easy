@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL\Tests;
 
 use cURL\ConstantsTable;

@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL;
 
 class ConstantsTable
@@ -37,7 +38,7 @@ class ConstantsTable
 
         $const = strtoupper($const);
         if (!isset($table[$const])) {
-            throw new Exception('Constant CURLOPT_'.$const.' does not exist.');
+            throw new Exception('Constant CURLOPT_' . $const . ' does not exist.');
         }
 
         return $table[$const];

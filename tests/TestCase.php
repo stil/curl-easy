@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL\Tests;
 
 use cURL\Response;
@@ -10,7 +11,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     public function createRequestUrl($param = 'ok')
     {
-        return $this->okTestUrl.'?'.http_build_query(array('curl-easy' => $param));
+        return $this->okTestUrl . '?' . http_build_query(array('curl-easy' => $param));
     }
 
     public function validateSuccesfulResponse(Response $response, $param = 'ok')
@@ -25,7 +26,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getInfo(CURLINFO_HTTP_CODE));
         $this->assertFalse($response->hasError());
     }
-    
+
     public function validateTimeoutedResponse(Response $response)
     {
         $this->assertEmpty($response->getContent());

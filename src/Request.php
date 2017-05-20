@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -9,17 +10,17 @@ class Request extends EventDispatcher implements RequestInterface
      * @var resource cURL handler
      */
     protected $ch;
-    
+
     /**
      * @var RequestsQueue Queue instance when requesting async
      */
     protected $queue;
-    
+
     /**
      * @var Options Object containing options for current request
      */
     protected $options = null;
-    
+
     /**
      * Create new cURL handle
      *
@@ -32,7 +33,7 @@ class Request extends EventDispatcher implements RequestInterface
         }
         $this->ch = curl_init();
     }
-    
+
     /**
      * Closes cURL resource and frees the memory.
      * It is neccessary when you make a lot of requests
@@ -44,7 +45,7 @@ class Request extends EventDispatcher implements RequestInterface
             curl_close($this->ch);
         }
     }
-    
+
     /**
      * Get the cURL\Options instance
      * Creates empty one if does not exist
@@ -58,10 +59,10 @@ class Request extends EventDispatcher implements RequestInterface
         }
         return $this->options;
     }
-    
+
     /**
      * Sets Options
-     * 
+     *
      * @param Options $options Options
      * @return void
      */
@@ -69,17 +70,17 @@ class Request extends EventDispatcher implements RequestInterface
     {
         $this->options = $options;
     }
-    
+
     /**
      * Returns cURL raw resource
-     * 
+     *
      * @return resource    cURL handle
      */
     public function getHandle()
     {
         return $this->ch;
     }
-    
+
     /**
      * Get unique id of cURL handle
      * Useful for debugging or logging.
@@ -90,7 +91,7 @@ class Request extends EventDispatcher implements RequestInterface
     {
         return (int)$this->ch;
     }
-    
+
     /**
      * Perform a cURL session.
      * Equivalent to curl_exec().
@@ -107,7 +108,7 @@ class Request extends EventDispatcher implements RequestInterface
             $this->options->applyTo($this);
         }
         $content = curl_exec($this->ch);
-        
+
         $response = new Response($this, $content);
         $errorCode = curl_errno($this->ch);
         if ($errorCode !== CURLE_OK) {

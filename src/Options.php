@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL;
 
 class Options extends Collection
@@ -14,10 +15,10 @@ class Options extends Collection
         if (!empty($this->data)) {
             curl_setopt_array($request->getHandle(), $this->data);
         }
-        
+
         return $this;
     }
-    
+
     /**
      * Intelligent setters
      *
