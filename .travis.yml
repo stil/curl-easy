@@ -1,7 +1,6 @@
 language: php
 php:
-  - 5.5
-  - 5.4
+  - '7.1'
 install:
   - composer self-update
   - composer install
