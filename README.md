@@ -46,124 +46,137 @@ Install this library as [Composer](http://getcomposer.org) package with followin
 composer require stil/curl-easy
 ```
 ## Examples
-### Single request with blocking
+### Single blocking request
 ```php
 <?php
-// We will download info about YouTube video: http://youtu.be/_PsdGQ96ah4
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/_PsdGQ96ah4?v=2&alt=json');
+// We will check current Bitcoin price via API.
+$request = new \cURL\Request('https://bitpay.com/rates/USD');
 $request->getOptions()
-	->set(CURLOPT_TIMEOUT, 5)
-	->set(CURLOPT_RETURNTRANSFER, true);
+    ->set(CURLOPT_TIMEOUT, 5)
+    ->set(CURLOPT_RETURNTRANSFER, true);
 $response = $request->send();
 $feed = json_decode($response->getContent(), true);
-echo $feed['entry']['title']['$t'];
+echo "Current Bitcoin price: " . $feed['data']['rate'] . " " . $feed['data']['code'] . "\n";
 ```
 The above example will output:
-`Karmah - Just be good to me`
-### Single request without blocking
+```
+Current Bitcoin price: 1999.97 USD
+```
+
+### Single non-blocking request
 ```php
 <?php
-// We will download info about YouTube video: http://youtu.be/_PsdGQ96ah4
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/_PsdGQ96ah4?v=2&alt=json');
+// We will check current Bitcoin price via API.
+$request = new \cURL\Request('https://bitpay.com/rates/USD');
 $request->getOptions()
-	->set(CURLOPT_TIMEOUT, 5)
-	->set(CURLOPT_RETURNTRANSFER, true);
+    ->set(CURLOPT_TIMEOUT, 5)
+    ->set(CURLOPT_RETURNTRANSFER, true);
 $request->addListener('complete', function (\cURL\Event $event) {
     $response = $event->response;
     $feed = json_decode($response->getContent(), true);
-    echo $feed['entry']['title']['$t'];
+    echo "\nCurrent Bitcoin price: " . $feed['data']['rate'] . " " . $feed['data']['code'] . "\n";
 });
 
-
 while ($request->socketPerform()) {
-    // do anything else when the requests are processed
-    $request->socketSelect();
-    // line below pauses execution until there's new data on socket
+    usleep(1000);
+    echo '*';
 }
 ```
 The above example will output:
-`Karmah - Just be good to me`
+```
+********************
+Current Bitcoin price: 1997.48 USD
+```
+
 ### Requests in parallel
 ```php
 <?php
-// We will download info about 2 YouTube videos:
-// http://youtu.be/XmSdTa9kaiQ and
-// http://youtu.be/6dC-sm5SWiU
+// We will download Bitcoin rates for both USD and EUR in parallel.
 
-// Init queue of requests
+// Init requests queue.
 $queue = new \cURL\RequestsQueue;
-// Set default options for all requests in queue
+// Set default options for all requests in queue.
 $queue->getDefaultOptions()
-	->set(CURLOPT_TIMEOUT, 5)
-	->set(CURLOPT_RETURNTRANSFER, true);
-// Set function to be executed when request will be completed
+    ->set(CURLOPT_TIMEOUT, 5)
+    ->set(CURLOPT_RETURNTRANSFER, true);
+// Set function to execute when request is complete.
 $queue->addListener('complete', function (\cURL\Event $event) {
     $response = $event->response;
-	$json = $response->getContent(); // Returns content of response
+    $json = $response->getContent(); // Returns content of response
     $feed = json_decode($json, true);
-    echo $feed['entry']['title']['$t'] . "\n";
+    echo "Current Bitcoin price: " . $feed['data']['rate'] . " " . $feed['data']['code'] . "\n";
 });
 
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/XmSdTa9kaiQ?v=2&alt=json');
+$request = new \cURL\Request('https://bitpay.com/rates/USD');
 // Add request to queue
 $queue->attach($request);
 
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/6dC-sm5SWiU?v=2&alt=json');
+$request = new \cURL\Request('https://bitpay.com/rates/EUR');
 $queue->attach($request);
 
 // Execute queue
+$timeStart = microtime(true);
 $queue->send();
+$elapsedMs = (microtime(true) - $timeStart) * 1000;
+echo 'Elapsed time: ' . round($elapsedMs) . " ms\n";
 ```
 The above example will output:
 ```
-Kool & The Gang - Fresh - 2004
-U2 - With Or Without You
+Current Bitcoin price: 1772.850062 EUR
+Current Bitcoin price: 1987.01 USD
+Elapsed time: 284 ms
 ```
+
 ### Non-blocking requests in parallel
 ```php
 <?php
-// We will download info about 2 YouTube videos:
-// http://youtu.be/XmSdTa9kaiQ and
-// http://youtu.be/6dC-sm5SWiU
+// We will download Bitcoin rates for both USD and EUR in parallel.
 
-// Init queue of requests
+// Init requests queue.
 $queue = new \cURL\RequestsQueue;
-// Set default options for all requests in queue
+// Set default options for all requests in queue.
 $queue->getDefaultOptions()
-	->set(CURLOPT_TIMEOUT, 5)
-	->set(CURLOPT_RETURNTRANSFER, true);
-// Set function to be executed when request will be completed
+    ->set(CURLOPT_TIMEOUT, 5)
+    ->set(CURLOPT_RETURNTRANSFER, true);
+// Set function to execute when request is complete.
 $queue->addListener('complete', function (\cURL\Event $event) {
     $response = $event->response;
-	$json = $response->getContent(); // Returns content of response
+    $json = $response->getContent(); // Returns content of response
     $feed = json_decode($json, true);
-    echo $feed['entry']['title']['$t'] . "\n";
+    echo "\nCurrent Bitcoin price: " . $feed['data']['rate'] . " " . $feed['data']['code'] . "\n";
 });
 
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/XmSdTa9kaiQ?v=2&alt=json');
+$request = new \cURL\Request('https://bitpay.com/rates/USD');
 // Add request to queue
 $queue->attach($request);
 
-$request = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/6dC-sm5SWiU?v=2&alt=json');
+$request = new \cURL\Request('https://bitpay.com/rates/EUR');
 $queue->attach($request);
 
 // Execute queue
+$timeStart = microtime(true);
 while ($queue->socketPerform()) {
+    usleep(1000);
     echo '*';
-    $queue->socketSelect();
 }
+$elapsedMs = (microtime(true) - $timeStart) * 1000;
+echo 'Elapsed time: ' . round($elapsedMs) . " ms\n";
 ```
 The above example will output something like that:
 ```
-***Kool & The Gang - Fresh - 2004
-**U2 - With Or Without You
+*****************************************************************************************************************************************************
+Current Bitcoin price: 1772.145208 EUR
+************************************************************************
+Current Bitcoin price: 1986.22 USD
+Elapsed time: 374 ms
 ```
-### Adding new requests on runtime
+
+### Processing queue of multiple requests while having maximum 2 at once executed at the moment
 ```php
-$requests = array();
-$videos = array('tv0IEwypXkY', 'p8EH1_jZBl4', 'pXxwxEb3akc', 'Fh-O6nvQr9Q', '31vXOeV67PQ');
-foreach ($videos as $id) {
-    $requests[] = new \cURL\Request('http://gdata.youtube.com/feeds/api/videos/'.$id.'?v=2&alt=json');
+$requests = [];
+$currencies = ['USD', 'EUR', 'JPY', 'CNY'];
+foreach ($currencies as $code) {
+    $requests[] = new \cURL\Request('https://bitpay.com/rates/' . $code);
 }
 
 $queue = new \cURL\RequestsQueue;
@@ -175,24 +188,23 @@ $queue->addListener('complete', function (\cURL\Event $event) use (&$requests) {
     $response = $event->response;
     $json = $response->getContent(); // Returns content of response
     $feed = json_decode($json, true);
-    echo $feed['entry']['title']['$t'] . "\n";
-    
-    $next = array_pop($requests);
-    if ($next) {
+    echo "Current Bitcoin price: " . $feed['data']['rate'] . " " . $feed['data']['code'] . "\n";
+
+    if ($next = array_pop($requests)) {
         $event->queue->attach($next);
     }
 });
 
 $queue->attach(array_pop($requests));
+$queue->attach(array_pop($requests));
 $queue->send();
 ```
 The above example will output something like that:
 ```
-Kid Cudi - Cudi Zone
-Kid Cudi-I Be High
-Kid Cudi - Marijuana
-Kid Cudi - Trapped In My Mind (HQ)
-KiD Cudi - Don't Play This Song **LYRICS** [ Man On The Moon II ]
+Current Bitcoin price: 220861.025 JPY
+Current Bitcoin price: 13667.81675 CNY
+Current Bitcoin price: 1771.0567 EUR
+Current Bitcoin price: 1985 USD
 ```
 ### Intelligent Options setting
 Replace `CURLOPT_*` with `set*()` and you will receive method name.
@@ -234,9 +246,8 @@ $response = $request->send();
 
 if ($response->hasError()) {
     $error = $response->getError();
-    echo
-        'Error code: '.$error->getCode()."\n".
-        'Message: "'.$error->getMessage().'"';
+    echo 'Error code: ' . $error->getCode() . "\n";
+    echo 'Message: "' . $error->getMessage() . '"' . "\n";
 }
 ```
 Probably above example will output
