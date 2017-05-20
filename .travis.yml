@@ -2,5 +2,4 @@ language: php
 php:
   - '7.1'
 install:
-  - composer self-update
   - composer install
