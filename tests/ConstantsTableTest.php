@@ -4,7 +4,7 @@ namespace cURL\Tests;
 
 use cURL\ConstantsTable;
 
-class ConstantsTableTest extends \PHPUnit_Framework_TestCase
+class ConstantsTableTest extends TestCase
 {
     public function testFindNumericValue()
     {

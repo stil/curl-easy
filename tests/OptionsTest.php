@@ -91,7 +91,13 @@ class OptionsTest extends TestCase
     {
         $opts = new Options();
         $opts->setTimeout(123)->setUserAgent('browser');
+        $this->assertEquals(123, $opts->get(CURLOPT_TIMEOUT));
+        $this->assertEquals('browser', $opts->get(CURLOPT_USERAGENT));
+
+        $opts = new Options();
         $opts->set(CURLOPT_TIMEOUT, 123)->set(CURLOPT_USERAGENT, 'browser');
+        $this->assertEquals(123, $opts->get(CURLOPT_TIMEOUT));
+        $this->assertEquals('browser', $opts->get(CURLOPT_USERAGENT));
     }
 
     public function testRemove()
