@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -9,22 +10,22 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
      * @var Options Default options for new Requests attached to RequestsQueue
      */
     protected $defaultOptions = null;
-    
+
     /**
      * @var resource cURL multi handler
      */
     protected $mh;
-    
+
     /**
      * @var Request[] Array of requests attached
      */
     protected $queue = array();
-    
+
     /**
      * @var array Array of requests added to curl multi handle
      */
     protected $running = array();
-    
+
     /**
      * Initializes curl_multi handler
      */
@@ -32,7 +33,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
     {
         $this->mh = curl_multi_init();
     }
-    
+
     /**
      * Destructor, closes curl_multi handler
      *
@@ -44,7 +45,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             curl_multi_close($this->mh);
         }
     }
-    
+
     /**
      * Returns cURL\Options object with default request's options
      *
@@ -57,7 +58,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
         }
         return $this->defaultOptions;
     }
-    
+
     /**
      * Overrides default options with given Options object
      *
@@ -68,7 +69,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
     {
         $this->defaultOptions = $defaultOptions;
     }
-    
+
     /**
      * Get cURL multi handle
      *
@@ -78,7 +79,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
     {
         return $this->mh;
     }
-    
+
     /**
      * Attach request to queue.
      *
@@ -90,7 +91,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
         $this->queue[$request->getUID()] = $request;
         return $this;
     }
-    
+
     /**
      * Detach request from queue.
      *
@@ -102,7 +103,7 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
         unset($this->queue[$request->getUID()]);
         return $this;
     }
-    
+
     /**
      * Processes handles which are ready and removes them from pool.
      *
@@ -115,11 +116,11 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             $n++;
             $request = $this->queue[(int)$info['handle']];
             $result = $info['result'];
-            
+
             curl_multi_remove_handle($this->mh, $request->getHandle());
             unset($this->running[$request->getUID()]);
             $this->detach($request);
-            
+
             $event = new Event();
             $event->request = $request;
             $event->response = new Response($request, curl_multi_getcontent($request->getHandle()));
@@ -130,20 +131,20 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             $this->dispatch('complete', $event);
             $request->dispatch('complete', $event);
         }
-        
+
         return $n;
     }
-    
+
     /**
      * Returns count of handles in queue
-     * 
+     *
      * @return int    Handles count
      */
     public function count()
     {
         return count($this->queue);
     }
-    
+
     /**
      * Executes requests in parallel
      *
@@ -155,16 +156,16 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             $this->socketSelect();
         }
     }
-    
+
     /**
      * Returns requests present in $queue but not in $running
-     * 
+     *
      * @return Request[]    Array of requests
      */
     protected function getRequestsNotRunning()
     {
         $map = $this->queue;
-        foreach($this->running as $k => $v) unset($map[$k]);
+        foreach ($this->running as $k => $v) unset($map[$k]);
         return $map;
     }
 
@@ -202,21 +203,21 @@ class RequestsQueue extends EventDispatcher implements RequestsQueueInterface, \
             if ($runningHandles < count($this->running)) {
                 $this->read();
             }
-            
+
             $notRunning = $this->getRequestsNotRunning();
         } while (count($notRunning) > 0);
         // Why the loop? New requests might be added at runtime on 'complete' event.
         // So we need to attach them to curl_multi handle immediately.
-        
+
         return $this->count() > 0;
     }
-    
+
     /**
      * Waits until activity on socket
      * On success, returns TRUE. On failure, this function will
      * return FALSE on a select failure or timeout (from the underlying
      * select system call)
-     * 
+     *
      * @param float|int $timeout Maximum time to wait
      * @throws Exception
      * @return bool

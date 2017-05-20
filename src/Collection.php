@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL;
 
 class Collection
@@ -6,8 +7,8 @@ class Collection
     /**
      * @var array Collection
      */
-    protected $data = array();
-    
+    protected $data = [];
+
     /**
      * Converts current object to array
      *
@@ -17,11 +18,11 @@ class Collection
     {
         return $this->data;
     }
-    
+
     /**
      * Sets value
      *
-     * @param mixed $key Key   
+     * @param mixed $key Key
      * @param mixed $value Value
      * @return self
      */
@@ -36,7 +37,7 @@ class Collection
         }
         return $this;
     }
-    
+
     /**
      * Checks if key does exist
      *
@@ -47,7 +48,7 @@ class Collection
     {
         return isset($this->data[$key]);
     }
-    
+
     /**
      * Returns value of $key
      *
@@ -63,7 +64,7 @@ class Collection
             throw new Exception('Key does not exist.');
         }
     }
-    
+
     /**
      * Removes key
      *

@@ -1,3 +1,4 @@
+[![Travis](https://img.shields.io/travis/stil/curl-easy.svg)](https://travis-ci.org/stil/curl-easy)
 [![Latest Stable Version](https://poser.pugx.org/stil/curl-easy/v/stable)](https://packagist.org/packages/stil/curl-easy) [![Total Downloads](https://poser.pugx.org/stil/curl-easy/downloads)](https://packagist.org/packages/stil/curl-easy) [![License](https://poser.pugx.org/stil/curl-easy/license)](https://packagist.org/packages/stil/curl-easy)
 
 # Table of contents
@@ -39,15 +40,10 @@ If you need high speed crawling in your project, you might be interested in stil
 
 ## Installation
 In order to use cURL-PHP library you need to install the » libcurl package.
-It also requires PHP 5.3 or newer and Symfony's EventDispatcher 2.1.* or newer.
 
-[Composer](http://getcomposer.org) is recommended for installation.
-```json
-{
-    "require": {
-        "stil/curl-easy": "*"
-    }
-}
+Install this library as [Composer](http://getcomposer.org) package with following command:
+```bash
+composer require stil/curl-easy
 ```
 ## Examples
 ### Single request with blocking

@@ -1,4 +1,5 @@
 <?php
+
 namespace cURL;
 
 class Response
@@ -6,22 +7,22 @@ class Response
     protected $ch;
     protected $error;
     protected $content = null;
-    
+
     /**
      * Constructs response
-     * 
+     *
      * @param Request $request Request
-     * @param string  $content Content of reponse
+     * @param string $content Content of reponse
      */
     public function __construct(Request $request, $content = null)
     {
         $this->ch = $request->getHandle();
-        
+
         if (is_string($content)) {
             $this->content = $content;
         }
     }
-    
+
     /**
      * Get information regarding a current transfer
      * If opt is given, returns its value as a string
@@ -35,20 +36,20 @@ class Response
     {
         return $key === null ? curl_getinfo($this->ch) : curl_getinfo($this->ch, $key);
     }
-    
+
     /**
      * Returns content of request
-     * 
+     *
      * @return string    Content
      */
     public function getContent()
     {
         return $this->content;
     }
-    
+
     /**
      * Sets error instance
-     * 
+     *
      * @param Error $error Error to set
      * @return void
      */
@@ -56,21 +57,21 @@ class Response
     {
         $this->error = $error;
     }
-    
+
     /**
      * Returns a error instance
-     * 
+     *
      * @return Error|null
      */
     public function getError()
     {
         return isset($this->error) ? $this->error : null;
     }
-    
+
     /**
-     * Returns the error number for the last cURL operation.    
-     * 
-     * @return int  Returns the error number or 0 (zero) if no error occurred. 
+     * Returns the error number for the last cURL operation.
+     *
+     * @return int  Returns the error number or 0 (zero) if no error occurred.
      */
     public function hasError()
     {
