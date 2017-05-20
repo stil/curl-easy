@@ -1,6 +1,6 @@
 [![Latest Stable Version](https://poser.pugx.org/stil/curl-easy/v/stable)](https://packagist.org/packages/stil/curl-easy) [![Total Downloads](https://poser.pugx.org/stil/curl-easy/downloads)](https://packagist.org/packages/stil/curl-easy) [![License](https://poser.pugx.org/stil/curl-easy/license)](https://packagist.org/packages/stil/curl-easy)
 
-#Table of contents
+# Table of contents
 * [Introduction](#introduction)
     * [Description](#description)
 	* [Main Features](#main-features)
@@ -13,7 +13,7 @@
     * [Request::getContent](#requestgetcontent)
     * [Request::getInfo](#requestgetinfo)
     * [Request::send](#requestsend)
-* [cURL\RequestQueue](#curlrequestsqueue)
+* [cURL\RequestQueue](#curlrequestqueue)
     * [RequestsQueue::__construct](#requestsqueue__construct)
     * [RequestsQueue::getDefaultOptions](#requestsqueuegetdefaultoptions)
     * [RequestsQueue::setDefaultOptions](#requestsqueuesetdefaultoptions)
@@ -24,11 +24,11 @@
     * [Options::set](#optionsset)
     * [Options::toArray](#optionstoarray)
 
-##Introduction
-###Description
+## Introduction
+### Description
 This is small but powerful and robust library which speeds the things up. If you are tired of using PHP cURL extension with its procedural interface, but you want also keep control about script execution - it's great choice for you!
 If you need high speed crawling in your project, you might be interested in stil/curl-easy extension - [stil/curl-robot](https://github.com/stil/curl-robot).
-###Main features
+### Main features
 * widely unit tested.
 * lightweight library with moderate level interface. It's not all-in-one library.
 * parallel/asynchronous connections with very simple interface.
@@ -37,7 +37,7 @@ If you need high speed crawling in your project, you might be interested in stil
 * intelligent setters as alternative to CURLOPT_* constants.
 * if you know the cURL php extension, you don't have to learn things from beginning
 
-##Installation
+## Installation
 In order to use cURL-PHP library you need to install the » libcurl package.
 It also requires PHP 5.3 or newer and Symfony's EventDispatcher 2.1.* or newer.
 
@@ -49,8 +49,8 @@ It also requires PHP 5.3 or newer and Symfony's EventDispatcher 2.1.* or newer.
     }
 }
 ```
-##Examples
-###Single request with blocking
+## Examples
+### Single request with blocking
 ```php
 <?php
 // We will download info about YouTube video: http://youtu.be/_PsdGQ96ah4
@@ -64,7 +64,7 @@ echo $feed['entry']['title']['$t'];
 ```
 The above example will output:
 `Karmah - Just be good to me`
-###Single request without blocking
+### Single request without blocking
 ```php
 <?php
 // We will download info about YouTube video: http://youtu.be/_PsdGQ96ah4
@@ -87,7 +87,7 @@ while ($request->socketPerform()) {
 ```
 The above example will output:
 `Karmah - Just be good to me`
-###Requests in parallel
+### Requests in parallel
 ```php
 <?php
 // We will download info about 2 YouTube videos:
@@ -123,7 +123,7 @@ The above example will output:
 Kool & The Gang - Fresh - 2004
 U2 - With Or Without You
 ```
-###Non-blocking requests in parallel
+### Non-blocking requests in parallel
 ```php
 <?php
 // We will download info about 2 YouTube videos:
@@ -162,7 +162,7 @@ The above example will output something like that:
 ***Kool & The Gang - Fresh - 2004
 **U2 - With Or Without You
 ```
-###Adding new requests on runtime
+### Adding new requests on runtime
 ```php
 $requests = array();
 $videos = array('tv0IEwypXkY', 'p8EH1_jZBl4', 'pXxwxEb3akc', 'Fh-O6nvQr9Q', '31vXOeV67PQ');
@@ -198,7 +198,7 @@ Kid Cudi - Marijuana
 Kid Cudi - Trapped In My Mind (HQ)
 KiD Cudi - Don't Play This Song **LYRICS** [ Man On The Moon II ]
 ```
-###Intelligent Options setting
+### Intelligent Options setting
 Replace `CURLOPT_*` with `set*()` and you will receive method name.
 Examples:
 ```php
@@ -229,7 +229,7 @@ $request->setOptions($opts);
 $queue = new \cURL\RequestsQueue;
 $queue->setDefaultOptions($opts);
 ```
-###Error handling
+### Error handling
 You can access cURL error codes in Response class.
 Examples:
 ```php
@@ -249,28 +249,28 @@ Error code: 6
 Message: "Could not resolve host: non-existsing-page; Host not found"
 ```
 You can find all of CURLE_* error codes [here](http://php.net/manual/en/curl.constants.php).
-##cURL\Request
-###Request::__construct
-###Request::getOptions
-###Request::setOptions
-###RequestsQueue::socketPerform
-###RequestsQueue::socketSelect
-###Request::send
-##cURL\RequestQueue
-###RequestsQueue::__construct
-###RequestsQueue::getDefaultOptions
-###RequestsQueue::setDefaultOptions
-###RequestsQueue::socketPerform
-###RequestsQueue::socketSelect
-###RequestsQueue::send
-##cURL\Response
-###Response::getContent
-###Response::getInfo
-###Response::hasError
-###Response::getError
-##cURL\Options
-###Options::set
-###Options::toArray
-##cURL\Error
-###Error::getCode
-###Error::getMessage
+## cURL\Request
+### Request::__construct
+### Request::getOptions
+### Request::setOptions
+### RequestsQueue::socketPerform
+### RequestsQueue::socketSelect
+### Request::send
+## cURL\RequestQueue
+### RequestsQueue::__construct
+### RequestsQueue::getDefaultOptions
+### RequestsQueue::setDefaultOptions
+### RequestsQueue::socketPerform
+### RequestsQueue::socketSelect
+### RequestsQueue::send
+## cURL\Response
+### Response::getContent
+### Response::getInfo
+### Response::hasError
+### Response::getError
+## cURL\Options
+### Options::set
+### Options::toArray
+## cURL\Error
+### Error::getCode
+### Error::getMessage
