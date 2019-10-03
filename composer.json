@@ -3,7 +3,7 @@
     "description": "cURL wrapper for PHP. Supports parallel and non-blocking requests. For high speed crawling, see stil/curl-robot.",
     "license": "MIT",
     "require": {
-        "symfony/event-dispatcher": "^3.2"
+        "symfony/event-dispatcher": "^4.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.1"
@@ -17,5 +17,6 @@
         "psr-4": {
             "cURL\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
