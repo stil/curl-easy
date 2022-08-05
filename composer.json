@@ -1,21 +1,23 @@
 {
-    "name": "stil/curl-easy",
-    "description": "cURL wrapper for PHP. Supports parallel and non-blocking requests. For high speed crawling, see stil/curl-robot.",
-    "license": "MIT",
-    "require": {
-        "symfony/event-dispatcher": "^3.2"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^6.1"
-    },
-    "autoload": {
-        "psr-4": {
-            "cURL\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "cURL\\Tests\\": "tests/"
-        }
+  "name": "stil/curl-easy",
+  "description": "cURL wrapper for PHP. Supports parallel and non-blocking requests. For high speed crawling, see stil/curl-robot.",
+  "license": "MIT",
+  "require": {
+    "symfony/event-dispatcher": "^5.0",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "cURL\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "cURL\\Tests\\": "tests/"
+    }
+  }
 }

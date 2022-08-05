@@ -4,17 +4,17 @@ namespace cURL;
 
 interface RequestsQueueInterface
 {
-    public function getDefaultOptions();
+    public function getDefaultOptions(): Options;
 
-    public function setDefaultOptions(Options $defaultOptions);
+    public function setDefaultOptions(Options $defaultOptions): void;
 
-    public function attach(Request $request);
+    public function attach(Request $request): self;
 
-    public function detach(Request $request);
+    public function detach(Request $request): self;
 
-    public function send();
+    public function send(): void;
 
-    public function socketPerform();
+    public function socketPerform(): bool;
 
-    public function socketSelect($timeout);
+    public function socketSelect($timeout): bool;
 }

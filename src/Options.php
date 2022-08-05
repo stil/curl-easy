@@ -1,39 +1,271 @@
 <?php
 
-namespace cURL;
-
-class Options extends Collection
-{
-    /**
-     * Applies options to Request object
-     *
-     * @param Request $request
-     * @return self
-     */
-    public function applyTo(Request $request)
-    {
-        if (!empty($this->data)) {
-            curl_setopt_array($request->getHandle(), $this->data);
-        }
-
-        return $this;
-    }
+    namespace cURL;
 
     /**
-     * Intelligent setters
-     *
-     * @param string $name Function name
-     * @param array $args Arguments
-     * @throws Exception Invalid CURLOPT_ constant has been specified
-     * @return self
+     * @method setAutoreferer(mixed $value)
+     * @method setBinarytransfer(mixed $value)
+     * @method setBuffersize(mixed $value)
+     * @method setCainfo(mixed $value)
+     * @method setCapath(mixed $value)
+     * @method setConnecttimeout(mixed $value)
+     * @method setCookie(mixed $value)
+     * @method setCookiefile(mixed $value)
+     * @method setCookiejar(mixed $value)
+     * @method setCookiesession(mixed $value)
+     * @method setCrlf(mixed $value)
+     * @method setCustomrequest(mixed $value)
+     * @method setDnsCacheTimeout(mixed $value)
+     * @method setDnsUseGlobalCache(mixed $value)
+     * @method setEgdsocket(mixed $value)
+     * @method setEncoding(mixed $value)
+     * @method setFailonerror(mixed $value)
+     * @method setFile(mixed $value)
+     * @method setFiletime(mixed $value)
+     * @method setFollowlocation(mixed $value)
+     * @method setForbidReuse(mixed $value)
+     * @method setFreshConnect(mixed $value)
+     * @method setFtpappend(mixed $value)
+     * @method setFtplistonly(mixed $value)
+     * @method setFtpport(mixed $value)
+     * @method setFtpUseEprt(mixed $value)
+     * @method setFtpUseEpsv(mixed $value)
+     * @method setHeader(mixed $value)
+     * @method setHeaderfunction(mixed $value)
+     * @method setHttp200aliases(mixed $value)
+     * @method setHttpget(mixed $value)
+     * @method setHttpheader(mixed $value)
+     * @method setHttpproxytunnel(mixed $value)
+     * @method setHttpVersion(mixed $value)
+     * @method setInfile(mixed $value)
+     * @method setInfilesize(mixed $value)
+     * @method setInterface(mixed $value)
+     * @method setKrb4level(mixed $value)
+     * @method setLowSpeedLimit(mixed $value)
+     * @method setLowSpeedTime(mixed $value)
+     * @method setMaxconnects(mixed $value)
+     * @method setMaxredirs(mixed $value)
+     * @method setNetrc(mixed $value)
+     * @method setNobody(mixed $value)
+     * @method setNoprogress(mixed $value)
+     * @method setNosignal(mixed $value)
+     * @method setPort(mixed $value)
+     * @method setPost(mixed $value)
+     * @method setPostfields(mixed $value)
+     * @method setPostquote(mixed $value)
+     * @method setPrequote(mixed $value)
+     * @method setPrivate(mixed $value)
+     * @method setProgressfunction(mixed $value)
+     * @method setProxy(mixed $value)
+     * @method setProxyport(mixed $value)
+     * @method setProxytype(mixed $value)
+     * @method setProxyuserpwd(mixed $value)
+     * @method setPut(mixed $value)
+     * @method setQuote(mixed $value)
+     * @method setRandomFile(mixed $value)
+     * @method setRange(mixed $value)
+     * @method setReaddata(mixed $value)
+     * @method setReadfunction(mixed $value)
+     * @method setReferer(mixed $value)
+     * @method setResumeFrom(mixed $value)
+     * @method setReturntransfer(mixed $value)
+     * @method setShare(mixed $value)
+     * @method setSslcert(mixed $value)
+     * @method setSslcertpasswd(mixed $value)
+     * @method setSslcerttype(mixed $value)
+     * @method setSslengine(mixed $value)
+     * @method setSslengineDefault(mixed $value)
+     * @method setSslkey(mixed $value)
+     * @method setSslkeypasswd(mixed $value)
+     * @method setSslkeytype(mixed $value)
+     * @method setSslversion(mixed $value)
+     * @method setSslCipherList(mixed $value)
+     * @method setSslVerifyhost(mixed $value)
+     * @method setSslVerifypeer(mixed $value)
+     * @method setStderr(mixed $value)
+     * @method setTelnetoptions(mixed $value)
+     * @method setTimecondition(mixed $value)
+     * @method setTimeout(mixed $value)
+     * @method setTimevalue(mixed $value)
+     * @method setTransfertext(mixed $value)
+     * @method setUnrestrictedAuth(mixed $value)
+     * @method setUpload(mixed $value)
+     * @method setUrl(mixed $value)
+     * @method setUseragent(mixed $value)
+     * @method setUserpwd(mixed $value)
+     * @method setVerbose(mixed $value)
+     * @method setWritefunction(mixed $value)
+     * @method setWriteheader(mixed $value)
+     * @method setHttpauth(mixed $value)
+     * @method setFtpCreateMissingDirs(mixed $value)
+     * @method setProxyauth(mixed $value)
+     * @method setFtpResponseTimeout(mixed $value)
+     * @method setIpresolve(mixed $value)
+     * @method setMaxfilesize(mixed $value)
+     * @method setFtpSsl(mixed $value)
+     * @method setNetrcFile(mixed $value)
+     * @method setTcpNodelay(mixed $value)
+     * @method setFtpsslauth(mixed $value)
+     * @method setFtpAccount(mixed $value)
+     * @method setCookielist(mixed $value)
+     * @method setIgnoreContentLength(mixed $value)
+     * @method setFtpSkipPasvIp(mixed $value)
+     * @method setFtpFilemethod(mixed $value)
+     * @method setConnectOnly(mixed $value)
+     * @method setLocalport(mixed $value)
+     * @method setLocalportrange(mixed $value)
+     * @method setFtpAlternativeToUser(mixed $value)
+     * @method setMaxRecvSpeedLarge(mixed $value)
+     * @method setMaxSendSpeedLarge(mixed $value)
+     * @method setSslSessionidCache(mixed $value)
+     * @method setFtpSslCcc(mixed $value)
+     * @method setSshAuthTypes(mixed $value)
+     * @method setSshPrivateKeyfile(mixed $value)
+     * @method setSshPublicKeyfile(mixed $value)
+     * @method setConnecttimeoutMs(mixed $value)
+     * @method setHttpContentDecoding(mixed $value)
+     * @method setHttpTransferDecoding(mixed $value)
+     * @method setTimeoutMs(mixed $value)
+     * @method setKrblevel(mixed $value)
+     * @method setNewDirectoryPerms(mixed $value)
+     * @method setNewFilePerms(mixed $value)
+     * @method setAppend(mixed $value)
+     * @method setDirlistonly(mixed $value)
+     * @method setUseSsl(mixed $value)
+     * @method setSshHostPublicKeyMd5(mixed $value)
+     * @method setProxyTransferMode(mixed $value)
+     * @method setAddressScope(mixed $value)
+     * @method setCrlfile(mixed $value)
+     * @method setIssuercert(mixed $value)
+     * @method setKeypasswd(mixed $value)
+     * @method setCertinfo(mixed $value)
+     * @method setPassword(mixed $value)
+     * @method setPostredir(mixed $value)
+     * @method setProxypassword(mixed $value)
+     * @method setProxyusername(mixed $value)
+     * @method setUsername(mixed $value)
+     * @method setNoproxy(mixed $value)
+     * @method setProtocols(mixed $value)
+     * @method setRedirProtocols(mixed $value)
+     * @method setSocks5GssapiNec(mixed $value)
+     * @method setSocks5GssapiService(mixed $value)
+     * @method setTftpBlksize(mixed $value)
+     * @method setSshKnownhosts(mixed $value)
+     * @method setFtpUsePret(mixed $value)
+     * @method setMailFrom(mixed $value)
+     * @method setMailRcpt(mixed $value)
+     * @method setRtspClientCseq(mixed $value)
+     * @method setRtspRequest(mixed $value)
+     * @method setRtspServerCseq(mixed $value)
+     * @method setRtspSessionId(mixed $value)
+     * @method setRtspStreamUri(mixed $value)
+     * @method setRtspTransport(mixed $value)
+     * @method setFnmatchFunction(mixed $value)
+     * @method setWildcardmatch(mixed $value)
+     * @method setResolve(mixed $value)
+     * @method setTlsauthPassword(mixed $value)
+     * @method setTlsauthType(mixed $value)
+     * @method setTlsauthUsername(mixed $value)
+     * @method setAcceptEncoding(mixed $value)
+     * @method setTransferEncoding(mixed $value)
+     * @method setGssapiDelegation(mixed $value)
+     * @method setAccepttimeoutMs(mixed $value)
+     * @method setDnsServers(mixed $value)
+     * @method setMailAuth(mixed $value)
+     * @method setSslOptions(mixed $value)
+     * @method setTcpKeepalive(mixed $value)
+     * @method setTcpKeepidle(mixed $value)
+     * @method setTcpKeepintvl(mixed $value)
+     * @method setSaslIr(mixed $value)
+     * @method setDnsInterface(mixed $value)
+     * @method setDnsLocalIp4(mixed $value)
+     * @method setDnsLocalIp6(mixed $value)
+     * @method setXoauth2Bearer(mixed $value)
+     * @method setLoginOptions(mixed $value)
+     * @method setExpect100TimeoutMs(mixed $value)
+     * @method setSslEnableAlpn(mixed $value)
+     * @method setSslEnableNpn(mixed $value)
+     * @method setHeaderopt(mixed $value)
+     * @method setProxyheader(mixed $value)
+     * @method setPinnedpublickey(mixed $value)
+     * @method setUnixSocketPath(mixed $value)
+     * @method setSslVerifystatus(mixed $value)
+     * @method setPathAsIs(mixed $value)
+     * @method setSslFalsestart(mixed $value)
+     * @method setPipewait(mixed $value)
+     * @method setProxyServiceName(mixed $value)
+     * @method setServiceName(mixed $value)
+     * @method setDefaultProtocol(mixed $value)
+     * @method setStreamWeight(mixed $value)
+     * @method setTftpNoOptions(mixed $value)
+     * @method setConnectTo(mixed $value)
+     * @method setTcpFastopen(mixed $value)
+     * @method setKeepSendingOnError(mixed $value)
+     * @method setPreProxy(mixed $value)
+     * @method setProxyCainfo(mixed $value)
+     * @method setProxyCapath(mixed $value)
+     * @method setProxyCrlfile(mixed $value)
+     * @method setProxyKeypasswd(mixed $value)
+     * @method setProxyPinnedpublickey(mixed $value)
+     * @method setProxySslCipherList(mixed $value)
+     * @method setProxySslOptions(mixed $value)
+     * @method setProxySslVerifyhost(mixed $value)
+     * @method setProxySslVerifypeer(mixed $value)
+     * @method setProxySslcert(mixed $value)
+     * @method setProxySslcerttype(mixed $value)
+     * @method setProxySslkey(mixed $value)
+     * @method setProxySslkeytype(mixed $value)
+     * @method setProxySslversion(mixed $value)
+     * @method setProxyTlsauthPassword(mixed $value)
+     * @method setProxyTlsauthType(mixed $value)
+     * @method setProxyTlsauthUsername(mixed $value)
+     * @method setAbstractUnixSocket(mixed $value)
+     * @method setSuppressConnectHeaders(mixed $value)
+     * @method setRequestTarget(mixed $value)
+     * @method setSocks5Auth(mixed $value)
+     * @method setSshCompression(mixed $value)
+     * @method setHappyEyeballsTimeoutMs(mixed $value)
+     * @method setTimevalueLarge(mixed $value)
+     * @method setDnsShuffleAddresses(mixed $value)
+     * @method setHaproxyprotocol(mixed $value)
+     * @method setDisallowUsernameInUrl(mixed $value)
+     * @method setProxyTls13Ciphers(mixed $value)
+     * @method setTls13Ciphers(mixed $value)
+     * @method setHttp09Allowed(mixed $value)
+     * @method setSafeUpload(mixed $value)
      */
-    public function __call($name, $args)
+    class Options extends Collection
     {
-        if (substr($name, 0, 3) == 'set' && isset($args[0])) {
-            $const = strtoupper(substr($name, 3));
-            $numericValue = ConstantsTable::findNumericValue($const);
-            $this->set($numericValue, $args[0]);
+        /**
+         * Applies options to Request object
+         *
+         * @param Request $request
+         * @return self
+         */
+        public function applyTo(Request $request): self
+        {
+            if (!empty($this->data)) {
+                curl_setopt_array($request->getHandle(), $this->data);
+            }
+
+            return $this;
         }
-        return $this;
+
+        /**
+         * Intelligent setters
+         *
+         * @param string $name Function name
+         * @param array $args Arguments
+         * @return self
+         * @throws Exception Invalid CURLOPT_ constant has been specified
+         */
+        public function __call(string $name, array $args): self
+        {
+            if (substr($name, 0, 3) == 'set' && isset($args[0])) {
+                $const = strtoupper(substr($name, 3));
+                $numericValue = ConstantsTable::findNumericValue($const);
+                $this->set($numericValue, $args[0]);
+            }
+            return $this;
+        }
     }
-}
