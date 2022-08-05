@@ -2,19 +2,26 @@
 
 namespace cURL;
 
+use CurlHandle;
+
 class Response
 {
+    /** @var resource|CurlHandle */
     protected $ch;
+
+    /** @var Error|null */
     protected $error;
+
+    /** @var string|null */
     protected $content = null;
 
     /**
      * Constructs response
      *
      * @param Request $request Request
-     * @param string $content Content of reponse
+     * @param string|null $content Content of reponse
      */
-    public function __construct(Request $request, $content = null)
+    public function __construct(Request $request, string $content = null)
     {
         $this->ch = $request->getHandle();
 
@@ -29,10 +36,10 @@ class Response
      * Otherwise, returns an associative array with
      * the following elements (which correspond to opt), or FALSE on failure.
      *
-     * @param int $key One of the CURLINFO_* constants
+     * @param int|null $key One of the CURLINFO_* constants
      * @return mixed
      */
-    public function getInfo($key = null)
+    public function getInfo(int $key = null)
     {
         return $key === null ? curl_getinfo($this->ch) : curl_getinfo($this->ch, $key);
     }
@@ -42,7 +49,7 @@ class Response
      *
      * @return string    Content
      */
-    public function getContent()
+    public function getContent(): ?string
     {
         return $this->content;
     }
@@ -63,17 +70,15 @@ class Response
      *
      * @return Error|null
      */
-    public function getError()
+    public function getError(): ?Error
     {
-        return isset($this->error) ? $this->error : null;
+        return $this->error;
     }
 
     /**
-     * Returns the error number for the last cURL operation.
-     *
-     * @return int  Returns the error number or 0 (zero) if no error occurred.
+     * @return bool
      */
-    public function hasError()
+    public function hasError(): bool
     {
         return isset($this->error);
     }

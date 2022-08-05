@@ -1,18 +1,18 @@
 <?php
 
-namespace cURL;
+    namespace cURL;
 
-interface RequestInterface
-{
-    public function getOptions();
+    interface RequestInterface
+    {
+        public function getOptions(): Options;
 
-    public function setOptions(Options $options);
+        public function setOptions(Options $options): void;
 
-    public function getUID();
+        public function getUID(): int;
 
-    public function socketPerform();
+        public function socketPerform(): bool;
 
-    public function socketSelect($timeout);
+        public function socketSelect($timeout): bool;
 
-    public function send();
-}
+        public function send(): Response;
+    }

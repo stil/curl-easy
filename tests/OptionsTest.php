@@ -18,14 +18,17 @@ class OptionsTest extends TestCase
         $opts = new Options();
         $array = $opts->toArray();
 
-        $this->assertInternalType('array', $array);
+        $this->assertIsArray($array);
         $this->assertEmpty($array);
     }
 
+    /**
+     * @throws Exception
+     */
     protected function assertsForSet(Options $opts)
     {
         $array = $opts->toArray();
-        $this->assertEquals(2, count($array));
+        $this->assertCount(2, $array);
 
         $values = array(
             CURLOPT_TIMEOUT => 123,
@@ -52,6 +55,9 @@ class OptionsTest extends TestCase
         $this->assertInstanceOf('cURL\Exception', $e);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSingleSet()
     {
         $opts = new Options();
@@ -60,6 +66,9 @@ class OptionsTest extends TestCase
         $this->assertsForSet($opts);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testArraySet()
     {
         $opts = new Options();
@@ -72,6 +81,9 @@ class OptionsTest extends TestCase
         $this->assertsForSet($opts);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIntelligentSet()
     {
         $opts = new Options();
@@ -80,13 +92,17 @@ class OptionsTest extends TestCase
 
         $e = null;
         try {
-            $opts->setUserAgentt('browser');
+            /** @noinspection PhpUndefinedMethodInspection */
+            $opts->setUserAgentt('something');
         } catch (Exception $e) {
         }
         $this->assertInstanceOf('cURL\Exception', $e);
         $this->assertsForSet($opts);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFluentSetters()
     {
         $opts = new Options();

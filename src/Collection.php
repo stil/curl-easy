@@ -14,7 +14,7 @@ class Collection
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->data;
     }
@@ -26,7 +26,7 @@ class Collection
      * @param mixed $value Value
      * @return self
      */
-    public function set($key, $value = null)
+    public function set($key, $value = null): self
     {
         if (is_array($key)) {
             foreach ($key as $k => $v) {
@@ -44,7 +44,7 @@ class Collection
      * @param mixed $key Key
      * @return bool    TRUE if exists, FALSE otherwise
      */
-    public function has($key)
+    public function has($key): bool
     {
         return isset($this->data[$key]);
     }
@@ -71,7 +71,7 @@ class Collection
      * @param mixed $key Key to remove
      * @return self
      */
-    public function remove($key)
+    public function remove($key): self
     {
         unset($this->data[$key]);
         return $this;

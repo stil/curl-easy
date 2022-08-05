@@ -5,14 +5,14 @@ namespace cURL;
 class ConstantsTable
 {
     /**
-     * @var int[] Array of cURL constants required for intelligent setters
+     * @var array<string,int> Array of cURL constants required for intelligent setters
      */
     protected static $curlConstantsTable = array();
 
     /**
      * @return array
      */
-    public static function loadCurlConstantsTable()
+    public static function loadCurlConstantsTable(): array
     {
         if (empty(self::$curlConstantsTable)) {
             $constants = get_defined_constants(true);
@@ -32,7 +32,7 @@ class ConstantsTable
      * @return int
      * @throws Exception
      */
-    public static function findNumericValue($const)
+    public static function findNumericValue(string $const): int
     {
         $table = self::loadCurlConstantsTable();
 
