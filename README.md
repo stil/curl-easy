@@ -1,7 +1,8 @@
 # Maintenance clone
 
 This is a maintenance clone of [stil/curl-easy](https://github.com/stil/curl-easy) meant to keeep it working with the 
-latest Symfony / PHP versions.
+latest Symfony / PHP versions. Please note in the `maintenance` branch (default) the package is renamed to 
+`exteon/curl-easy` so you can use it with a VCS-type repo in composer.
 
 # Table of contents
 * [Introduction](#introduction)
