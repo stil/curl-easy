@@ -1,9 +1,10 @@
 {
-  "name": "stil/curl-easy",
+  "name": "exteon/curl-easy",
+  "version": "2.0.0",
   "description": "cURL wrapper for PHP. Supports parallel and non-blocking requests. For high speed crawling, see stil/curl-robot.",
   "license": "MIT",
   "require": {
-    "symfony/event-dispatcher": "^5.0",
+    "symfony/event-dispatcher": "^5.0 || ^6.0",
     "ext-curl": "*",
     "ext-json": "*"
   },

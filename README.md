@@ -1,5 +1,7 @@
-[![Travis](https://img.shields.io/travis/stil/curl-easy.svg)](https://travis-ci.org/stil/curl-easy)
-[![Latest Stable Version](https://poser.pugx.org/stil/curl-easy/v/stable)](https://packagist.org/packages/stil/curl-easy) [![Total Downloads](https://poser.pugx.org/stil/curl-easy/downloads)](https://packagist.org/packages/stil/curl-easy) [![License](https://poser.pugx.org/stil/curl-easy/license)](https://packagist.org/packages/stil/curl-easy)
+# Maintenance clone
+
+This is a maintenance clone of [stil/curl-easy](https://github.com/stil/curl-easy) meant to keeep it working with the 
+latest Symfony / PHP versions.
 
 # Table of contents
 * [Introduction](#introduction)
